@@ -1,6 +1,6 @@
 ## SageMaker Run Notebook
 
-__Note__: sagemaker_run_notebook is experimental software designed for trial use. It may change significantly in the future and there is no guarantee of support. Please do use it and give us feedback on what we could improve, but take its experimental nature into account.
+> _Note_: sagemaker_run_notebook is experimental software designed for trial use. It may change significantly in the future and there is no guarantee of support. Please do use it and give us feedback on what we could improve, but take its experimental nature into account.
 
 This is a library and a JupyterLab extension that lets you run your Jupyter Notebooks in AWS using SageMaker processing jobs. Notebooks can be run on a schedule, triggered by an event, or called _ad hoc_. Notebooks are executed using [papermill](https://github.com/nteract/papermill) which allows you to specify parameters for each notebook run.
 
