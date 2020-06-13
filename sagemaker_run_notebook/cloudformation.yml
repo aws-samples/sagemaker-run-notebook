@@ -1,0 +1,391 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You
+# may not use this file except in compliance with the License. A copy of
+# the License is located at
+#
+#     http://aws.amazon.com/apache2.0/
+#
+# or in the "license" file accompanying this file. This file is
+# distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+# ANY KIND, either express or implied. See the License for the specific
+# language governing permissions and limitations under the License.
+
+
+# A CloudFormation template that sets up the resources you need to run 
+# and schedule Jupyter notebooks using SageMaker Processing.
+# 
+# This creates the Lambda function "RunNotebook" and IAM roles and policies to be used. The 
+# publicly named roles and policies have the region added to the end to allow the template to be run 
+# repeatedly in different regions (e.g., BasicExecuteNotebookRole-us-east-1). Roles and policies that
+# are used internally by the resources are given "anonymous" names by CloudFormation.
+#
+# One of the goals of this template is to promote secure operations by creating roles and
+# policies that enable the desired features in the most minimal way. Feel free to review
+# and modify these policies as appropriate for your use case.
+# 
+# These are the activities supported along with the roles and policies created for them:
+#  
+# The notebook client
+#   When you want to schedule or run a notebook, you are the "client." You might use AWS primitives 
+#   (like `aws lambda invoke ...`), the CLI (like `run-notebook run ...`), the Python library 
+#   (like `run.invoke(...)`), or via the user interface supported in the JupyterLab extension. 
+#   The client will want to run and schedule notebooks, see the status of runs and schedules, and
+#   download the output of the runs from S3. 
+#
+#   This template creates the policy "ExecuteNotebookClient-<region>". You can add this policy to 
+#   any IAM role or IAM user to give them all the permissions they need to be a notebook client.
+#   (We also create an anonymous role that isn't really meant to be used but CloudFormation requires
+#   a policy to be attached to a role.)
+#   
+# The running notebook
+#
+#   The notebook is run as a job in the SageMaker Processing Jobs service. There are minimum permissions
+#   you need for that, as defined at https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-createprocessingjob-perms.
+#   If your notebook doesn't need any other permissions to run, you can just run it with the 
+#   "BasicExecuteNotebookRole-<region>". If you want your notebook to run with more permissions (e.g.,
+#   you want to access data RDS or run a job in AWS Glue), you can add the policy "ExecuteNotebookContainerPolicy-<region>"
+#   to a role that has the other permissions you want your notebook to have.
+#
+# Executing the Lambda
+# 
+#   When the Lambda is executing, it needs permission to start the SageMaker Processing Job to run the
+#   notebook and give it the role you want it to use. We create an anonymous role for the (the 
+#   "LambdaExecutionRole")  and attach it to the Lambda as part of this template.
+#   
+# Building containers for notebook execution
+#
+#   Jobs run in SageMaker Processing Jobs run inside a Docker container. For this project, we have defined
+#   some of the container environment to include a script to set up the environment and run Papermill on the 
+#   input notebook. We provide tools to build and customize this container but working with Docker can be 
+#   challenging. To help with this, the CLI has a function to use CodeBuild to build the container 
+#   in a way you specify and deploy the container to ECR so it can be used in the notebook execution.
+# 
+#   We have created the role "ExecuteNotebookCodeBuildRole-<region>" to use when building the container
+#   that has all the permissions needed to download the description from S3, run the CodeBuild job and
+#   deploy the container to ECR. The `run-notebook create-container ...` command uses this role by default.
+
+
+Resources:
+  ExecuteNotebookClientRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: A minimal role that lets the user run notebooks on demand or on a scheduler
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - sagemaker.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  ExecuteNotebookClientPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: {"Fn::Join": ["-", ["ExecuteNotebookClient", {"Ref": "AWS::Region"}]]}
+      Roles: 
+        - !Ref ExecuteNotebookClientRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sagemaker:ListProcessingJobs
+              - sagemaker:DescribeProcessingJob
+              - sagemaker:StopProcessingJob
+            Resource: '*'
+          - Sid: listrules
+            Effect: Allow
+            Action:
+              - events:ListRules
+            Resource: '*'
+          - Sid: runnotebookrule
+            Effect: Allow
+            Action:
+              - events:DeleteRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:DescribeRule
+              - events:EnableRule
+              - events:PutRule
+              - events:ListTargetsByRule
+              - events:DisableRule
+            Resource: 'arn:aws:events:*:*:rule/RunNotebook*'
+          - Sid: runnotebooklambda
+            Effect: Allow
+            Action:
+              - lambda:AddPermission
+              - lambda:InvokeFunction
+              - lambda:InvokeAsync
+              - lambda:RemovePermission
+            Resource: 'arn:aws:lambda:*:*:function:RunNotebook'
+          - Sid: s3xfer
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Resource: 
+              - 'arn:aws:s3:::*SageMaker*'
+              - 'arn:aws:s3:::*Sagemaker*'
+              - 'arn:aws:s3:::*sagemaker*'
+          - Sid: s3create
+            Effect: Allow
+            Action:
+              - s3:CreateBucket
+            Resource: '*'
+  BasicExecuteNotebookRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: {"Fn::Join": ["-", ["BasicExecuteNotebookRole", {"Ref": "AWS::Region"}]]}
+      Description: A minimal role used as the default for running the notebook container in SageMaker Processing
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - sagemaker.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+  ExecuteNotebookContainerPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: {"Fn::Join": ["-", ["ExecuteNotebookContainerPolicy", {"Ref": "AWS::Region"}]]}
+      Roles: 
+        - !Ref BasicExecuteNotebookRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudwatch:PutMetricData
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:CreateLogGroup
+              - logs:DescribeLogStreams
+              - s3:GetObject
+              - s3:PutObject
+              - s3:ListBucket
+              - ecr:GetAuthorizationToken
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+            Resource: '*'
+          - Sid: s3xfer
+            Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:LisBucket
+              - s3:PutObject
+            Resource: 
+              - 'arn:aws:s3:::*SageMaker*'
+              - 'arn:aws:s3:::*Sagemaker*'
+              - 'arn:aws:s3:::*sagemaker*'
+  ContainerBuildRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: {"Fn::Join": ["-", ["ExecuteNotebookCodeBuildRole", {"Ref": "AWS::Region"}]]}
+      Description: The role for building containers to be used with sagemaker_run_notebook
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - codebuild.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:CreateRepository
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:CompleteLayerUpload
+                  - ecr:GetAuthorizationToken
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:CreateLogGroup
+                  - logs:DescribeLogStreams
+                Resource: '*'  
+              - Sid: s3xfer
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: 
+                  - 'arn:aws:s3:::*SageMaker*'
+                  - 'arn:aws:s3:::*Sagemaker*'
+                  - 'arn:aws:s3:::*sagemaker*'
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: The role for running the sagemaker_run_notebook lambda
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 
+                  - sagemaker:CreateProcessingJob
+                  - iam:PassRole
+                Resource: '*'  
+  InvokeNotebookLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: RunNotebook
+      Description: A function to run Jupyter notebooks using SageMaker processing jobs
+      Handler: index.lambda_handler
+      Runtime: python3.7
+      Role: {"Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] }
+      Timeout: 30
+      Code:
+        ZipFile: |
+          import json
+          import os
+          import re
+          import time
+          
+          import boto3
+          
+          
+          def execute_notebook(
+              *,
+              image,
+              input_path,
+              output_prefix,
+              notebook,
+              parameters,
+              role,
+              instance_type,
+              rule_name
+          ):
+              session = ensure_session()
+              region = session.region_name
+          
+              account = session.client("sts").get_caller_identity()["Account"]
+              if not image:
+                image = "notebook-runner"
+              if "/" not in image:
+                  image = f"{account}.dkr.ecr.{region}.amazonaws.com/{image}"
+              if ":" not in image:
+                image = image + ":latest"
+
+              if not role:
+                role = f"BasicExecuteNotebookRole-{region}"
+              if "/" not in role:
+                role = f"arn:aws:iam::{account}:role/{role}"
+                
+              if output_prefix is None:
+                output_prefix = os.path.dirname(input_path)
+              
+              if notebook == None:
+                  notebook = input_path
+          
+              base = os.path.basename(notebook)
+              nb_name, nb_ext = os.path.splitext(base)
+              timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.gmtime())
+          
+              job_name = (
+                  ("papermill-" + re.sub(r"[^-a-zA-Z0-9]", "-", nb_name))[: 62 - len(timestamp)]
+                  + "-"
+                  + timestamp
+              )
+              input_directory = "/opt/ml/processing/input/"
+              local_input = input_directory + os.path.basename(input_path)
+              result = "{}-{}{}".format(nb_name, timestamp, nb_ext)
+              local_output = "/opt/ml/processing/output/"
+          
+              api_args = {
+                  "ProcessingInputs": [
+                      {
+                          "InputName": "notebook",
+                          "S3Input": {
+                              "S3Uri": input_path,
+                              "LocalPath": input_directory,
+                              "S3DataType": "S3Prefix",
+                              "S3InputMode": "File",
+                              "S3DataDistributionType": "FullyReplicated",
+                          },
+                      },
+                  ],
+                  "ProcessingOutputConfig": {
+                      "Outputs": [
+                          {
+                              "OutputName": "result",
+                              "S3Output": {
+                                  "S3Uri": output_prefix,
+                                  "LocalPath": local_output,
+                                  "S3UploadMode": "EndOfJob",
+                              },
+                          },
+                      ],
+                  },
+                  "ProcessingJobName": job_name,
+                  "ProcessingResources": {
+                      "ClusterConfig": {
+                          "InstanceCount": 1,
+                          "InstanceType": instance_type,
+                          "VolumeSizeInGB": 40,
+                      }
+                  },
+                  "StoppingCondition": {"MaxRuntimeInSeconds": 7200},
+                  "AppSpecification": {
+                      "ImageUri": image,
+                      "ContainerArguments": ["run_notebook",],
+                  },
+                  "RoleArn": role,
+                  "Environment": {},
+              }
+          
+              api_args["Environment"]["PAPERMILL_INPUT"] = local_input
+              api_args["Environment"]["PAPERMILL_OUTPUT"] = local_output + result
+              if os.environ.get("AWS_DEFAULT_REGION") != None:
+                  api_args["Environment"]["AWS_DEFAULT_REGION"] = os.environ["AWS_DEFAULT_REGION"]
+              api_args["Environment"]["PAPERMILL_PARAMS"] = json.dumps(parameters)
+              api_args["Environment"]["PAPERMILL_NOTEBOOK_NAME"] = base
+              if rule_name is not None:
+                  api_args["Environment"]["AWS_EVENTBRIDGE_RULE"] = rule_name
+          
+              client = boto3.client("sagemaker")
+              result = client.create_processing_job(**api_args)
+              job_arn = result["ProcessingJobArn"]
+              job = re.sub("^.*/", "", job_arn)
+              return job
+          
+          
+          def ensure_session(session=None):
+              """If session is None, create a default session and return it. Otherwise return the session passed in"""
+              if session is None:
+                  session = boto3.session.Session()
+              return session
+          
+          
+          def lambda_handler(event, context):
+              job = execute_notebook(
+                  image=event.get("image"),
+                  input_path=event["input_path"],
+                  output_prefix=event.get("output_prefix"),
+                  notebook=event.get("notebook"),
+                  parameters=event.get("parameters", dict()),
+                  role=event.get("role"),
+                  instance_type=event.get("instance_type", "ml.m5.large"),
+                  rule_name=event.get("rule_name"),
+              )
+              return {"job_name": job}

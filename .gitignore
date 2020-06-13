@@ -1,0 +1,13 @@
+__pycache__
+output/**
+dist/**
+.ipynb_checkpoints
+*.egg-info
+*.bundle.*
+lib/
+node_modules/
+*.tsbuildinfo
+yarn-error.log
+*.tgz
+MANIFEST
+manual_dist/**

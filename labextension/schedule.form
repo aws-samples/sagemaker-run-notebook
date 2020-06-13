@@ -1,0 +1,1 @@
+image=notebook-runner&input_path=s3://sagemaker-us-west-2-890154581112/papermill_input/notebook-2020-02-21-00-16-47.ipynb&notebook=../../work/scheduling/powers.ipynb&parameters={"n":50,"p":0.50}&role=IMRole&schedule=rate(20 minutes)
