@@ -53,7 +53,7 @@ cmdclass = create_cmdclass("pack_labext", data_files_spec=data_files_spec)
 cmdclass["pack_labext"] = pack_labext
 cmdclass.pop("develop")
 
-with open("ReadMe.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 required_packages = ["boto3>=1.10.44"]
