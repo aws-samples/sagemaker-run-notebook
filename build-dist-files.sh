@@ -10,17 +10,13 @@
 #
 # They all live in the subdirectory "manual_dist/"
 
-VERSION=0.12.0
-
-echo "Be sure that you've exported the latest version of the readme as PDF from VS Code!!!"
+VERSION=0.13.0
 
 make artifacts
 
 rm -rf manual_dist
 mkdir -p manual_dist
 
-cp ReadMe.pdf manual_dist/
-cp QuickStart.pdf manual_dist/
 cp build/dist/sagemaker_run_notebook-${VERSION}.tar.gz manual_dist/
 cp scripts/lifecycle-config/start.sh manual_dist/
 cp scripts/studio/install-run-notebook.sh manual_dist/
