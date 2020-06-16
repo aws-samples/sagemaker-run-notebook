@@ -21,11 +21,15 @@ You can go directly to the quick start you prefer:
 * [Using the CLI provided by the convenience package](#using-the-cli-provided-by-the-convenience-package)
 * [Activating the JupyterLab extension](#activating-the-jupyterlab-extension)
 
+The files we reference here can be downloaded from the [latest GitHub release][release].
+
+[release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
+
 ## Using existing AWS primitives
 
 You'll need to have AWS credentials set up that give you full permission on SageMaker, IAM, CloudFormation, Lambda, Cloudwatch Events, and ECR. You will also need to have Docker installed locally.
 
-You'll need two files that were provided in the package you received: cloudformation.yml and container.tar.gz.
+You'll need two files from the [release on GitHub][release]: cloudformation.yml and container.tar.gz.
 
 > _Note:_ This Quick Start shows all these operations using the AWS CLI, but the equivalent operations using the Boto3 library in Python or language bindings in other languages will work just as well.
 
@@ -43,7 +47,9 @@ $ aws cloudformation describe-stacks --stack-name sagemaker-run-notebook
 
 And the `StackStatus` in the command should be `CREATE_COMPLETE`.
 
-One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks. For complete information on the roles and policies as well as the source code for the Lambda function, see the `cloudformation.yml` file distributed with the software.
+One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks. For complete information on the roles and policies as well as the source code for the Lambda function, see the `cloudformation.yml` file which you can view [on GitHub][cfn-template] or download from the [latest release][release].
+
+[cfn-template]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/sagemaker_run_notebook/cloudformation.yml
 
 #### 2. Create a container image to run your notebook
 
@@ -51,7 +57,7 @@ Jobs run in SageMaker Processing Jobs run inside a Docker container. For this pr
 the container to include a script to set up the environment and run Papermill on the
 input notebook.
 
-The `container.tar.gz` file distributed with the release contains everything you need to build and customize the container. You can edit the `requirements.txt` file to specify Python libraries that your notebooks will need as described [here][requirements].
+The `container.tar.gz` file in the [latest release][release] contains everything you need to build and customize the container. You can edit the `requirements.txt` file to specify Python libraries that your notebooks will need as described [in the pip documentation][requirements].
 
 ```sh
 $ tar xvf container.tar.gz
@@ -146,7 +152,7 @@ Substitute your account number in place of 981276346578 in the source ARN and th
 
 Substitute the location where you stored your notebook as the `input` path argument.
 
-The `Input` field in the `put-targets` call are the arguments to the Lambda function and they can be customized to anything the Lambda accepts. (See `cloudformation.yml` for the Lambda function definition.)
+The `Input` field in the `put-targets` call are the arguments to the Lambda function and they can be customized to anything the Lambda accepts. (See [`cloudformation.yml`][cfn-template] for the Lambda function definition.)
 
 Note that times are always in UTC. To see the full rules on times, view the Cloudwatch Events documentation here: [Schedule Expressions for Rules][sched]
 
@@ -158,7 +164,7 @@ When the notebook has run, you can find the jobs with `aws sagemaker list-proces
 
 To follow this recipe, you'll need to have AWS credentials set up that give you full permission on CloudFormation. You'll add more permissions with the installed policy later in the recipe.
 
-You'll need one file that was provided with this distribution: sagemaker_run_notebook-0.13.0.tar.gz.
+You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.13.0.tar.gz.
 
 #### 1. Install the library
 
@@ -180,7 +186,7 @@ $ run-notebook create-infrastructure
 
 One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks. 
 
-For complete information on the roles and policies as well as the source code for the Lambda function, see the `cloudformation.yml` file distributed with the software.
+For complete information on the roles and policies as well as the source code for the Lambda function, see the [`cloudformation.yml` on GitHub][cfn-template].
 
 #### 3. Create a Docker container to run the notebook
 
@@ -244,20 +250,24 @@ Once you have the infrastructure and containers set up, the best way to activate
 
 #### In a SageMaker Notebook instance
 
-1. Upload the provided library file, sagemaker_run_notebook-0.13.0.tar.gz, to a location of your choosing in S3.
-2. On the AWS SageMaker console, go to Lifecycle Configuration. Create a new lifecycle configuration and add the `start.sh` script that you received in this distribution to the start action. Edit the S3 location to where you uploaded the installation tar file.
+1. Upload the installation package, sagemaker_run_notebook-0.13.0.tar.gz, from the [latest release][release] to a location of your choosing in S3.
+2. On the AWS SageMaker console, go to Lifecycle Configuration. Create a new lifecycle configuration and add the `start.sh` script (available on [GitHub][start.sh]) to the start action. Edit the S3 location to where you uploaded the installation tar file.
 3. Start or restart your notebook instance after setting the lifecycle configuration to point at your newly created lifecycle configuration.
+
+[start.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-config/start.sh
 
 #### In SageMaker Studio
 
 When you open SageMaker Studio, you can add the extension with the following steps:
 
-1. Upload the provided library file, sagemaker_run_notebook-0.13.0.tar.gz, to a location of your choosing in S3.
-2. Save the provided `install-run-notebook.sh` to your home directory in Studio. The easiest way to do this is to open a text file and paste the contents in. Then edit the S3 location to where you uploaded the installation tar file and save it as `install-run-notebook.sh`.
+1. Upload the the installation package, sagemaker_run_notebook-0.13.0.tar.gz, from the [latest release][release] to a location of your choosing in S3.
+2. Save the  `install-run-notebook.sh` script (available on [GitHub][install-run-notebook.sh]) to your home directory in Studio. The easiest way to do this is to open a text file and paste the contents in. Then edit the S3 location to where you uploaded the installation tar file and save it as `install-run-notebook.sh`.
 3. Open a terminal tab (`File`->`New`->`Terminal`) and run the script as `bash install-run-notebook.sh`.
 4. When it's complete, refresh your Studio browser tab and you'll see the sidebar scheduler tab.
 
 If you restart your server app, just rerun steps 3 & 4 and you'll have the extension ready to go.
+
+[install-run-notebook.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/studio/install-run-notebook.sh
 
 #### On a laptop or other system
 
