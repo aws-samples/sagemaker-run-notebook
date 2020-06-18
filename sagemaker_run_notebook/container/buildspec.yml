@@ -5,12 +5,17 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - base_region=$(echo ${BASE_IMAGE} | sed -n 's%\([0-9]*\)\.dkr\.ecr\.\([^.]*\)\.amazonaws.com/.*%\2%p')
+      - base_account=$(echo ${BASE_IMAGE} | sed -n 's%\([0-9]*\)\.dkr\.ecr\.\([^.]*\)\.amazonaws.com/.*%\1%p')
+      - if [ "${base_account}" != "" ]; then aws ecr get-login-password --region ${base_region} | docker login --username AWS --password-stdin ${base_account}.dkr.ecr.${base_region}.amazonaws.com; fi 
   build:
     commands:
       - echo Build started on `date`
       - echo Ensure docker repo exists and create it if necessary...
       - if ! aws ecr describe-repositories --repository-names "$IMAGE_REPO_NAME" >/dev/null 2>&1; then aws ecr create-repository --repository-name "$IMAGE_REPO_NAME"; echo Repository created; else echo Repository already exists, proceeding.; fi
-      - echo Building the Docker image...          
+      - echo Pulling the base image...
+      - docker pull -q ${BASE_IMAGE}
+      - echo Building the Docker image...
       - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg BASE_IMAGE=${BASE_IMAGE} .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
   post_build:

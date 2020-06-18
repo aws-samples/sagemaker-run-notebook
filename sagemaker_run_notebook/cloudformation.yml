@@ -203,10 +203,13 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ecr:CreateRepository
+                  - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:CompleteLayerUpload
+                  - ecr:CreateRepository
+                  - ecr:DescribeRepositories
                   - ecr:GetAuthorizationToken
+                  - ecr:GetDownloadUrlForLayer
                   - ecr:InitiateLayerUpload
                   - ecr:PutImage
                   - ecr:UploadLayerPart
