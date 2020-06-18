@@ -183,7 +183,7 @@ def create_infrastructure(args):
 
 def create_container(args):
     container_build.create_container(
-        args.repository, args.role, args.bucket, args.base, args.requirements
+        args.repository, args.role, args.bucket, args.base, args.requirements, log=not args.no_logs
     )
 
 
@@ -376,6 +376,11 @@ def main():
     container_parser.add_argument(
         "--bucket",
         help="The S3 bucket to use for sending data to CodeBuild (if None, use the SageMaker SDK default bucket).",
+    )
+    container_parser.add_argument(
+        "--no-logs",
+        action="store_true",
+        help="Don't show the logs of the running CodeBuild build"
     )
     container_parser.set_defaults(func=create_container)
 
