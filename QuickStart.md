@@ -6,7 +6,7 @@ Depending on your preference, we outline three ways to do this. All have the sam
 
 First, we show you how to use AWS tools directly to execute and schedule notebooks. To make the process easier, we have provided a CloudFormation template to set up the Lambda function you'll need and some IAM roles and policies that you'll use when running notebooks. We've also provided scripts for building and customizing the Docker container images that SageMaker Processing Jobs will use when running the notebooks.
 
-Second, we show you how to install and use the convenience package that wraps the AWS tools in a CLI and Python library that give you a more natural interface to running and scheduling notebooks.
+Second, we show you how to install and use the convenience package that wraps the AWS tools in a CLI and Python library to give you a more natural interface to running and scheduling notebooks.
 
 Finally, for those who prefer an interactive experience, the convenience package includes a JupyterLab extension that can be enabled for JupyterLab running locally, in SageMaker Studio, or on a SageMaker notebook instance.
 
