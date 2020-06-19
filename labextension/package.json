@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/classnames": "^2.2.9",
     "@types/codemirror": "^0.0.74",
-    "@typescript-eslint/eslint-plugin": "^2.28.0",
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
     "@typescript-eslint/parser": "^2.28.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
