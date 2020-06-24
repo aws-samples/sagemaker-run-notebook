@@ -42,7 +42,15 @@ async function loadDescription(jobName: string): Promise<Run> {
   return data.run;
 }
 
-function processDate(d: string, status: string): string {
+/**
+ * Process the date string returned by the server for the start time into something we can
+ * present in the UI. One option is that the server will not yet have set a date. This happens
+ * if we've kicked off the job but SageMaker processing is still starting it.
+ *
+ * @param d The date string returned by the server
+ * @param status The processing job status
+ */
+export function processDate(d: string, status: string): string {
   if (d == null) {
     if (status === 'InProgress') {
       return 'Starting';
@@ -50,7 +58,14 @@ function processDate(d: string, status: string): string {
       return '';
     }
   } else {
-    const date: Date = new Date(d);
+    const c = d.match(/^([-: \d]+)(\.\d+)?([+-])(\d+):(\d+)/);
+    const date: Date = new Date(c[1].replace(/-/g, '/'));
+    let offset: number = parseInt(c[4]) * 60 + parseInt(c[5]);
+    if (c[3] === '-') {
+      offset = -offset;
+    }
+    offset += date.getTimezoneOffset();
+    date.setMinutes(date.getMinutes() - offset);
     const result: string = date.toLocaleString();
     return result;
   }

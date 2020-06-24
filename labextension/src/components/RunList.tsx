@@ -25,7 +25,7 @@ import { Run, OutputNotebook, ErrorResponse } from '../server';
 import { SimpleTable, SimpleTablePage } from './SimpleTable';
 import { tableLinkClass, tableEmptyClass } from '../style/tables';
 import { openReadonlyNotebook } from '../widgets/ReadOnlyNotebook';
-import { showRunDetails } from './RunDetailsDialog';
+import { showRunDetails, processDate } from './RunDetailsDialog';
 
 const basenamePattern = /([^/]*)$/;
 
@@ -123,7 +123,7 @@ export class RunList extends React.Component<RunListProps, RunListState> {
     this.setState({ runs: runInfo.runs, error: runInfo.error });
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.props.model.runsChanged.disconnect(this.onRunsChanged, this);
   }
 
@@ -155,33 +155,12 @@ export class RunList extends React.Component<RunListProps, RunListState> {
       run.Notebook,
       this.formatParameters(run.Parameters),
       run.Status,
-      RunList.processDate(run.Start, run.Status),
+      processDate(run.Start, run.Status),
       run.Elapsed,
       details,
       links,
     ];
   };
-
-  /**
-   * Process the date string returned by the server for the start time into something we can
-   * present in the table. One option is that the server will not yet have set a date. This happens
-   * if we've kicked off the job but SageMaker processing is still starting it.
-   *
-   * @param d The date string returned by the server
-   */
-  private static processDate(d: string, status: string): string {
-    if (d == null) {
-      if (status === 'InProgress') {
-        return 'Starting';
-      } else {
-        return '';
-      }
-    } else {
-      const date: Date = new Date(d);
-      const result: string = date.toLocaleString();
-      return result;
-    }
-  }
 
   private formatParameters(params: string) {
     try {
@@ -199,7 +178,7 @@ export class RunList extends React.Component<RunListProps, RunListState> {
     }
   }
 
-  render() {
+  render(): JSX.Element {
     let content: JSX.Element;
     if (this.state.runs) {
       // sometimes it seems that render gets called before the constructor ???
