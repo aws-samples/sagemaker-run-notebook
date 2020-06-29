@@ -283,6 +283,18 @@ and then restart the server with:
 $ jupyter lab
 ```
 
+> __Note:__ This extension currently only supports JupyterLab 1.x releases. If you see:
+>
+> `WARNING | The extension "sagemaker_run_notebook" is outdated.`
+>
+> when you do `jupyter lab build`, it indicates that you're running JupyterLab 2.x. You can switch to 
+> the latest version of JupyterLab 1.x by running:
+> ```
+> $ pip uninstall jupyterlab
+> $ pip install 'jupyterlab<2'
+> ```
+> Support for a newer version of JupyterLab should be available soon.
+
 #### Using the JupyterLab extension
 
 The JupyterLab extension feature adds a tab to the left sidebar in JupyterLab that lets you launch notebook executions, set up schedules, and view notebook runs and active schedules:
