@@ -42,7 +42,15 @@ def process_params(params):
     else:
         return {k: v for k, v in [xform_param(p[0]) for p in params]}
 
-
+def load_extra(extra):
+    if extra is None:
+        return None
+    elif extra.startswith("@"):
+        with open(extra[1:], mode="r") as f:
+            return json.load(f)
+    else:
+        return json.loads(extra)
+        
 def run_notebook(args):
     params = process_params(args.p)
     if args.notebook.startswith("s3://"):
@@ -60,10 +68,11 @@ def run_notebook(args):
             parameters=params,
             role=args.role,
             instance_type=args.instance,
+            extra_args=load_extra(args.extra),
         )
-    except run.InvokeException as ie:
-        print(f"Error starting run: {str(ie)}")
-        return
+    # except run.InvokeException as ie:
+    #     print(f"Error starting run: {str(ie)}")
+    #     return
     except FileNotFoundError as fe:
         print(str(fe))
         return
@@ -147,6 +156,7 @@ def schedule(args):
         parameters=params,
         role=args.role,
         instance_type=args.instance,
+        extra_args=load_extra(args.extra),
     )
 
 
@@ -183,7 +193,12 @@ def create_infrastructure(args):
 
 def create_container(args):
     container_build.create_container(
-        args.repository, args.role, args.bucket, args.base, args.requirements, log=not args.no_logs
+        args.repository,
+        args.role,
+        args.bucket,
+        args.base,
+        args.requirements,
+        log=not args.no_logs,
     )
 
 
@@ -225,6 +240,10 @@ def main():
         "--image",
         help="The Docker image in ECR to use to run the notebook (default: notebook-runner)",
         default="notebook-runner",
+    )
+    run_parser.add_argument(
+        "--extra",
+        help="Extra arguments to pass to SageMaker processing formatted as JSON (use @filename to read JSON from a file) (default: None)",
     )
     run_parser.add_argument(
         "--output-dir",
@@ -312,6 +331,10 @@ def main():
         help="The Docker image in ECR to use to run the notebook (default: notebook-runner)",
         default="notebook-runner",
     )
+    schedule_parser.add_argument(
+        "--extra",
+        help="Extra arguments to pass to SageMaker processing formatted as JSON (use @filename to read JSON from a file) (default: None)",
+    )
     schedule_parser.add_argument("--at", help="When to run the notebook")
     schedule_parser.add_argument(
         "--event", help="Event that will trigger the notebook run"
@@ -380,7 +403,7 @@ def main():
     container_parser.add_argument(
         "--no-logs",
         action="store_true",
-        help="Don't show the logs of the running CodeBuild build"
+        help="Don't show the logs of the running CodeBuild build",
     )
     container_parser.set_defaults(func=create_container)
 

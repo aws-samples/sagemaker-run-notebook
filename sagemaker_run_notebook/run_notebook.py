@@ -648,6 +648,7 @@ def invoke(
     parameters={},
     role,
     instance_type="ml.m5.large",
+    extra_args=None,
     session=None,
 ):
     session = ensure_session(session)
@@ -681,6 +682,7 @@ def invoke(
         "parameters": parameters,
         "role": role,
         "instance_type": instance_type,
+        "extra_args": extra_args,
     }
 
     client = session.client("lambda")
@@ -714,6 +716,7 @@ def schedule(
     parameters={},
     role,
     instance_type="ml.m5.large",
+    extra_args=None,
     session=None,
 ):
     kwargs = {}
@@ -751,6 +754,7 @@ def schedule(
         "parameters": parameters,
         "role": role,
         "instance_type": instance_type,
+        "extra_args": extra_args,
         "rule_name": rule_name,
     }
 

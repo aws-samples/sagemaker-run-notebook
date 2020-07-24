@@ -16,16 +16,21 @@ def execute_notebook(
     role,
     instance_type,
     rule_name,
+    extra_args,
 ):
     session = ensure_session()
+    region = session.region_name
 
     account = session.client("sts").get_caller_identity()["Account"]
+    if not image:
+        image = "notebook-runner"
     if "/" not in image:
-        region = session.region_name
         image = f"{account}.dkr.ecr.{region}.amazonaws.com/{image}"
     if ":" not in image:
         image = image + ":latest"
 
+    if not role:
+        role = f"BasicExecuteNotebookRole-{region}"
     if "/" not in role:
         role = f"arn:aws:iam::{account}:role/{role}"
 
@@ -91,6 +96,9 @@ def execute_notebook(
         "Environment": {},
     }
 
+    if extra_args is not None:
+        api_args = merge_extra(api_args, extra_args)
+
     api_args["Environment"]["PAPERMILL_INPUT"] = local_input
     api_args["Environment"]["PAPERMILL_OUTPUT"] = local_output + result
     if os.environ.get("AWS_DEFAULT_REGION") != None:
@@ -107,6 +115,29 @@ def execute_notebook(
     return job
 
 
+def merge_extra(orig, extra):
+    result = dict(orig)
+    result["ProcessingInputs"].extend(extra.get("ProcessingInputs", []))
+    result["ProcessingOutputConfig"]["Outputs"].extend(
+        extra.get("ProcessingOutputConfig", {}).get("Outputs", [])
+    )
+    if "KmsKeyId" in extra.get("ProcessingOutputConfig", {}):
+        result["ProcessingOutputConfig"]["KmsKeyId"] = extra["ProcessingOutputConfig"]["KmsKeyId"]
+    result["ProcessingResources"]["ClusterConfig"] = {
+        **result["ProcessingResources"]["ClusterConfig"],
+        **extra.get("ProcessingResources", {}).get("ClusterConfig", {}),
+    }
+    result = {
+        **result,
+        **{
+            k: v
+            for k, v in extra.items()
+            if k in ["ExperimentConfig", "NetworkConfig", "StoppingCondition", "Tags"]
+        },
+    }
+    return result
+
+
 def ensure_session(session=None):
     """If session is None, create a default session and return it. Otherwise return the session passed in"""
     if session is None:
@@ -116,13 +147,14 @@ def ensure_session(session=None):
 
 def lambda_handler(event, context):
     job = execute_notebook(
-        image=event["image"],
+        image=event.get("image"),
         input_path=event["input_path"],
         output_prefix=event.get("output_prefix"),
         notebook=event.get("notebook"),
         parameters=event.get("parameters", dict()),
-        role=event["role"],
+        role=event.get("role"),
         instance_type=event.get("instance_type", "ml.m5.large"),
         rule_name=event.get("rule_name"),
+        extra_args=event.get("extra_args"),
     )
     return {"job_name": job}
