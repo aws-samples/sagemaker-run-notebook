@@ -11,7 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-.PHONY: clean artifacts release link install test run
+.PHONY: clean artifacts release link install test run cfntemplate
 
 release: install test
 	make artifacts
@@ -22,9 +22,16 @@ install: clean
 	jupyter serverextension enable --py sagemaker_run_notebook --sys-prefix
 
 clean:
+	rm -f sagemaker_run_notebook/cloudformation.yml
 	rm -rf build/dist
 
-artifacts: clean
+cfntemplate: sagemaker_run_notebook/cloudformation.yml
+
+sagemaker_run_notebook/cloudformation.yml: sagemaker_run_notebook/cloudformation-base.yml sagemaker_run_notebook/lambda_function.py
+	pyminify sagemaker_run_notebook/lambda_function.py | sed 's/^/          /' > /tmp/minified.py
+	cat sagemaker_run_notebook/cloudformation-base.yml /tmp/minified.py > sagemaker_run_notebook/cloudformation.yml
+
+artifacts: clean cfntemplate
 	python setup.py sdist --dist-dir build/dist
 
 test:
