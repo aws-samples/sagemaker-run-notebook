@@ -70,9 +70,9 @@ def run_notebook(args):
             instance_type=args.instance,
             extra_args=load_extra(args.extra),
         )
-    # except run.InvokeException as ie:
-    #     print(f"Error starting run: {str(ie)}")
-    #     return
+    except run.InvokeException as ie:
+        print(f"Error starting run: {str(ie)}")
+        return
     except FileNotFoundError as fe:
         print(str(fe))
         return
