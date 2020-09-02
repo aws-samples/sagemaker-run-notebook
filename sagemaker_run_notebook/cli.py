@@ -14,7 +14,9 @@
 import argparse
 import json
 import os
+import subprocess
 import textwrap
+import time
 
 import boto3
 
@@ -42,6 +44,7 @@ def process_params(params):
     else:
         return {k: v for k, v in [xform_param(p[0]) for p in params]}
 
+
 def load_extra(extra):
     if extra is None:
         return None
@@ -50,7 +53,8 @@ def load_extra(extra):
             return json.load(f)
     else:
         return json.loads(extra)
-        
+
+
 def run_notebook(args):
     params = process_params(args.p)
     if args.notebook.startswith("s3://"):
@@ -85,6 +89,50 @@ def run_notebook(args):
         print(failure)
     else:
         run.download_notebook(job_name, args.output_dir)
+
+
+def local_notebook(args):
+    params = process_params(args.p)
+    notebook_dir = os.path.dirname(args.notebook)
+    notebook = os.path.basename(args.notebook)
+
+    nb_name, nb_ext = os.path.splitext(notebook)
+    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.gmtime())
+    result = "{}-{}{}".format(nb_name, timestamp, nb_ext)
+
+    session = boto3.session.Session()
+    region = session.region_name
+    account = session.client("sts").get_caller_identity()["Account"]
+    image = args.image
+    if not image:
+        image = "notebook-runner"
+    if "/" not in image:
+        image = f"{account}.dkr.ecr.{region}.amazonaws.com/{image}"
+    if ":" not in image:
+        image = image + ":latest"
+
+    base_cmd = ["docker", "run", "--rm", "-td" if args.no_wait else "-ti"]
+    mnts = [
+        "-v",
+        os.path.abspath(notebook_dir) + ":/opt/ml/processing/input",
+        "-v",
+        os.path.abspath(args.output_dir) + ":/opt/ml/processing/output",
+    ]
+    env = [
+        "-e",
+        f"PAPERMILL_INPUT=/opt/ml/processing/input/{notebook}",
+        "-e",
+        f"PAPERMILL_OUTPUT=/opt/ml/processing/output/{result}",
+        "-e",
+        f"PAPERMILL_PARAMS={json.dumps(params)}",
+        "-e",
+        f"PAPERMILL_NOTEBOOK_NAME={notebook}",
+        "-e",
+        f"AWS_DEFAULT_REGION={region}",
+    ]
+    cmd = [*base_cmd, *mnts, *env, image, "run_notebook"]
+    p = subprocess.run(cmd)
+    print(f"Run finished with status {p.returncode}")
 
 
 def download_notebook(args):
@@ -360,6 +408,33 @@ def main():
         "--max", help="Maximum number of rules to show", type=int, default=9999999
     )
     listrules_parser.set_defaults(func=list_rules)
+
+    local_parser = subparsers.add_parser(
+        "local", help="Run a notebook locally using Docker"
+    )
+    local_parser.add_argument("notebook", help="The name of the notebook file to run")
+    local_parser.add_argument(
+        "-p",
+        action="append",
+        nargs=1,
+        help="Specify a parameter like -p x=7. Can be repeated.",
+    )
+    local_parser.add_argument(
+        "--image",
+        help="The Docker image in ECR to use to run the notebook (default: notebook-runner)",
+        default="notebook-runner",
+    )
+    local_parser.add_argument(
+        "--output-dir",
+        help="The directory to output the notebook to (default: .)",
+        default=".",
+    )
+    local_parser.add_argument(
+        "--no-wait",
+        help="Launch the notebook run but don't wait for it to complete",
+        action="store_true",
+    )
+    local_parser.set_defaults(func=local_notebook)
 
     createinfra_parser = subparsers.add_parser(
         "create-infrastructure",
