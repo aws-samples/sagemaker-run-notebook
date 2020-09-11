@@ -61,10 +61,13 @@ def run_notebook():
 
         os.chdir(notebook_dir)
 
-        print("Executing {} with output to {}".format(notebook_file, output_notebook))
+        kernel = os.environ.get("PAPERMILL_KERNEL", None)
+
+        print("Executing {} with output to {}{}".format(notebook_file, output_notebook, (" using kernel " + kernel) if kernel else ""))
         print("Notebook params = {}".format(params))
+        arg_map = dict(kernel_name=kernel) if kernel else {}
         papermill.execute_notebook(
-            notebook_file, output_notebook, params, kernel_name="python3"
+            notebook_file, output_notebook, params, **arg_map,
         )
         print("Execution complete")
 

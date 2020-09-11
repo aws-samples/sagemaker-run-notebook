@@ -16,7 +16,7 @@ phases:
       - echo Pulling the base image...
       - docker pull -q ${BASE_IMAGE}
       - echo Building the Docker image...
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg BASE_IMAGE=${BASE_IMAGE} .
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg BASE_IMAGE=${BASE_IMAGE} --build-arg KERNEL=$(cat kernel-var.txt) .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
   post_build:
     commands:

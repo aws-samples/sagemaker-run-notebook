@@ -19,9 +19,13 @@ RUN pip install papermill jupyter nteract-scrapbook boto3 requests==2.20.1 && pi
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PATH="/opt/program:${PATH}"
+ARG KERNEL
+ENV PAPERMILL_KERNEL=$KERNEL
 
 # Set up the program in the image
-COPY run_notebook execute.py /opt/program/
+COPY run_notebook execute.py init-script.sh /opt/program/
+RUN bash /opt/program/init-script.sh
+
 ENTRYPOINT ["/bin/bash"]
 
 # because there is a bug where you have to be root to access the directories

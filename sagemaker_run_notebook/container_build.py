@@ -301,7 +301,7 @@ def delete_zip_file(bucket, key):
     s3.delete_object(Bucket=bucket, Key=key)
 
 
-def create_container(repo_name, role, bucket, base, requirements, log=True):
+def create_container(repo_name, role, bucket, base, requirements, script, kernel, log=True):
     container_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "container"
     )
@@ -310,6 +310,11 @@ def create_container(repo_name, role, bucket, base, requirements, log=True):
         shutil.copytree(container_dir, dest_dir)
         if requirements:
             shutil.copy2(requirements, os.path.join(dest_dir, "requirements.txt"))
+        if script:
+            shutil.copy2(script, os.path.join(dest_dir, "init-script.sh"))
+        if kernel:
+            with open(os.path.join(dest_dir, "kernel-var.txt"), "w") as f:
+                print(kernel, file=f)
         bucket, key = upload_zip_file(repo_name, bucket, dir=dest_dir)
     try:
         create_project(repo_name, role, zipfile=f"{bucket}/{key}", base_image=base)

@@ -246,6 +246,8 @@ def create_container(args):
         args.bucket,
         args.base,
         args.requirements,
+        args.script,
+        args.kernel,
         log=not args.no_logs,
     )
 
@@ -465,6 +467,15 @@ def main():
     container_parser.add_argument(
         "--requirements",
         help="A requirements.txt file to define custom dependencies for the container",
+    )
+    container_parser.add_argument(
+        "--script",
+        help="A shell script to run while building the container (after any requirements are installed)",
+    )
+    container_parser.add_argument(
+        "-k",
+        "--kernel",
+        help="The name of the kernel to use to run the notebook (default: first Python kernel)",
     )
     container_parser.add_argument(
         "--role",
