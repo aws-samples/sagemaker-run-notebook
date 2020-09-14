@@ -122,7 +122,9 @@ def merge_extra(orig, extra):
         extra.get("ProcessingOutputConfig", {}).get("Outputs", [])
     )
     if "KmsKeyId" in extra.get("ProcessingOutputConfig", {}):
-        result["ProcessingOutputConfig"]["KmsKeyId"] = extra["ProcessingOutputConfig"]["KmsKeyId"]
+        result["ProcessingOutputConfig"]["KmsKeyId"] = extra["ProcessingOutputConfig"][
+            "KmsKeyId"
+        ]
     result["ProcessingResources"]["ClusterConfig"] = {
         **result["ProcessingResources"]["ClusterConfig"],
         **extra.get("ProcessingResources", {}).get("ClusterConfig", {}),

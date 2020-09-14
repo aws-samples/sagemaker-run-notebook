@@ -301,7 +301,9 @@ def delete_zip_file(bucket, key):
     s3.delete_object(Bucket=bucket, Key=key)
 
 
-def create_container(repo_name, role, bucket, base, requirements, script, kernel, log=True):
+def create_container(
+    repo_name, role, bucket, base, requirements, script, kernel, log=True
+):
     container_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "container"
     )
