@@ -27,7 +27,7 @@ sudo -u ec2-user -i <<'EOF'
 
 # PARAMETERS
 S3_LOCATION=s3://REPLACE-WITH-MY-BUCKET-PREFIX/
-VERSION=0.13.0
+VERSION=0.14.0
 TARBALL=sagemaker_run_notebook-${VERSION}.tar.gz
 
 

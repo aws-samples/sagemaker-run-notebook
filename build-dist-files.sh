@@ -10,7 +10,7 @@
 #
 # They all live in the subdirectory "manual_dist/"
 
-VERSION=0.13.0
+VERSION=0.14.0
 
 make artifacts
 
