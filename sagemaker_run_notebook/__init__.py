@@ -34,6 +34,8 @@ from sagemaker_run_notebook.run_notebook import (
     NotebookRunTracker,
 )
 
+from sagemaker_run_notebook.server_extension._version import __version__
+
 has_jupyter = False
 try:
     import notebook

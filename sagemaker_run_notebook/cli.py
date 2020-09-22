@@ -260,6 +260,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="A command line interface for running and scheduling notebooks in SageMaker"
     )
+    parser.add_argument("-v", "--version", action="store_true", help="Display current version and exit")
     subparsers = parser.add_subparsers(dest="subcommand")
 
     run_parser = subparsers.add_parser("run", help="Run a notebook now")
@@ -491,10 +492,13 @@ def main():
         action="store_true",
         help="Don't show the logs of the running CodeBuild build",
     )
+    
     container_parser.set_defaults(func=create_container)
 
     args = parser.parse_args()
-    if args.subcommand is None:
+    if args.version:
+        print("v{}".format(run.__version__))
+    elif args.subcommand is None:
         parser.print_help()
     else:
         args.func(args)
