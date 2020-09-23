@@ -25,6 +25,8 @@ from urllib.request import urlopen
 import boto3
 import botocore
 
+import jupyter_client.kernelspec as kernelspec
+
 import papermill
 
 input_var = "PAPERMILL_INPUT"
@@ -62,6 +64,13 @@ def run_notebook():
         os.chdir(notebook_dir)
 
         kernel = os.environ.get("PAPERMILL_KERNEL", None)
+        if not kernel:
+            nb_kernel = kernel_for(notebook_file)
+            avail_kernels = available_kernels()
+            if nb_kernel is None or nb_kernel not in avail_kernels:
+                kernel = avail_kernels[0]
+            else:
+                kernel = nb_kernel
 
         print(
             "Executing {} with output to {}{}".format(
@@ -94,6 +103,22 @@ def run_notebook():
     else:
         print("Output was written to {}".format(output_notebook))
 
+def available_kernels():
+    """Return the list of kernels"""
+    mgr = kernelspec.KernelSpecManager()
+    return list(mgr.find_kernel_specs().keys())
+
+def kernel_for(notebook):
+    """Read the notebook and extract the kernel name, if any"""
+    with open(notebook, "r") as f:
+        nb = json.load(f)
+
+        md = nb.get("metadata")
+        if md:
+            ks = md.get("kernelspec")
+            if ks:
+                return ks["name"]
+    return None
 
 if __name__ == "__main__":
     run_notebook()
