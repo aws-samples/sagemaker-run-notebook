@@ -26,24 +26,18 @@ set -e
 sudo -u ec2-user -i <<'EOF'
 
 # PARAMETERS
-S3_LOCATION=s3://REPLACE-WITH-MY-BUCKET-PREFIX/
 VERSION=0.14.0
-TARBALL=sagemaker_run_notebook-${VERSION}.tar.gz
-
 
 EXTENSION_NAME=sagemaker_run_notebook
 
 # Set up the user setting and workspace directories
 mkdir -p /home/ec2-user/SageMaker/.jupyter-user/{workspaces,user-settings}
 
-# Download the distribution tarball from S3
-aws s3 cp ${S3_LOCATION}${TARBALL} /tmp/
-
 # Run in the conda environment that the Jupyter server uses so that our changes are picked up
 source /home/ec2-user/anaconda3/bin/activate JupyterSystemEnv
 
 # Install the extension and rebuild JupyterLab so it picks up the new UI
-pip install /tmp/${TARBALL}
+pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v${VERSION}/sagemaker_run_notebook-${VERSION}.tar.gz
 jupyter lab build
 
 source /home/ec2-user/anaconda3/bin/deactivate
