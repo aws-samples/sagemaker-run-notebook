@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.15.0 (2020-09-23)
+
+### Bugs
+
+* Fixed [Issue #4](https://github.com/aws-samples/sagemaker-run-notebook/issues/4), a regression where the invocation of papermill would fail with "No such kernel". (Note that any containers built under v0.14.0, should be rebuilt with `run-notebook )
+
+### Features
+
+Two small changes:
+
+* Added a `-v` option to run-notebook to display the current installed version of the library.
+* Changed the install scripts for SageMaker notebooks to install directly from the release on GitHub so users don't need to copy to an S3 bucket first.
+
 ## v0.14.0 (2020-09-14)
 
 ### Features

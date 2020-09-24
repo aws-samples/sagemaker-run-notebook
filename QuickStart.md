@@ -164,12 +164,12 @@ When the notebook has run, you can find the jobs with `aws sagemaker list-proces
 
 To follow this recipe, you'll need to have AWS credentials set up that give you full permission on CloudFormation. You'll add more permissions with the installed policy later in the recipe.
 
-You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.14.0.tar.gz.
+You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.15.0.tar.gz.
 
 #### 1. Install the library
 
 ```sh
-$ pip install sagemaker_run_notebook-0.14.0.tar.gz
+$ pip install sagemaker_run_notebook-0.15.0.tar.gz
 ```
 
 This installs the sagemaker run notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in "Using the JupyterLab Extension" for more information.
@@ -250,9 +250,8 @@ Once you have the infrastructure and containers set up, the best way to activate
 
 #### In a SageMaker Notebook instance
 
-1. Upload the installation package, sagemaker_run_notebook-0.14.0.tar.gz, from the [latest release][release] to a location of your choosing in S3.
-2. On the AWS SageMaker console, go to Lifecycle Configuration. Create a new lifecycle configuration and add the `start.sh` script (available on [GitHub][start.sh]) to the start action. Edit the S3 location to where you uploaded the installation tar file.
-3. Start or restart your notebook instance after setting the lifecycle configuration to point at your newly created lifecycle configuration.
+1. On the AWS SageMaker console, go to Lifecycle Configuration. Create a new lifecycle configuration and add the `start.sh` script (available on [GitHub][start.sh]) to the start action. (The easiest way is just to copy and paste from GitHub to the AWS console.)
+2. Start or restart your notebook instance after setting the lifecycle configuration to point at your newly created lifecycle configuration.
 
 [start.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-config/start.sh
 
@@ -260,12 +259,11 @@ Once you have the infrastructure and containers set up, the best way to activate
 
 When you open SageMaker Studio, you can add the extension with the following steps:
 
-1. Upload the the installation package, sagemaker_run_notebook-0.14.0.tar.gz, from the [latest release][release] to a location of your choosing in S3.
-2. Save the  `install-run-notebook.sh` script (available on [GitHub][install-run-notebook.sh]) to your home directory in Studio. The easiest way to do this is to open a text file and paste the contents in. Then edit the S3 location to where you uploaded the installation tar file and save it as `install-run-notebook.sh`.
-3. Open a terminal tab (`File`->`New`->`Terminal`) and run the script as `bash install-run-notebook.sh`.
-4. When it's complete, refresh your Studio browser tab and you'll see the sidebar scheduler tab.
+1. Save the  `install-run-notebook.sh` script (available on [GitHub][install-run-notebook.sh]) to your home directory in Studio. The easiest way to do this is to open a text file and paste the contents in.
+2. Open a terminal tab (`File`->`New`->`Terminal`) and run the script as `bash install-run-notebook.sh`.
+3. When it's complete, refresh your Studio browser tab and you'll see the sidebar scheduler tab.
 
-If you restart your server app, just rerun steps 3 & 4 and you'll have the extension ready to go.
+If you restart your server app, just rerun steps 2 & 3 and you'll have the extension ready to go.
 
 [install-run-notebook.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/studio/install-run-notebook.sh
 
