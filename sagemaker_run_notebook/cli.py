@@ -23,6 +23,7 @@ import boto3
 import sagemaker_run_notebook as run
 import sagemaker_run_notebook.create_infrastructure as infra
 import sagemaker_run_notebook.container_build as container_build
+import sagemaker_run_notebook.emr as emr
 
 
 def xform_param(arg):
@@ -54,6 +55,12 @@ def load_extra(extra):
     else:
         return json.loads(extra)
 
+def base_extras(extras):
+    def proc(extra):
+        if extra:
+            raise "Base extras must be first"
+        return extras
+    return proc
 
 def run_notebook(args):
     params = process_params(args.p)
@@ -63,6 +70,11 @@ def run_notebook(args):
     else:
         input_path = None
         notebook = args.notebook
+    extra_fns = []
+    if args.extra:
+        extra_fns.append(base_extras(load_extra(args.extra)))
+    if args.emr:
+        extra_fns.append(emr.add_emr_cluster(args.emr))
     try:
         job_name = run.invoke(
             image=args.image,
@@ -72,7 +84,7 @@ def run_notebook(args):
             parameters=params,
             role=args.role,
             instance_type=args.instance,
-            extra_args=load_extra(args.extra),
+            extra_fns=extra_fns,
         )
     except run.InvokeException as ie:
         print(f"Error starting run: {str(ie)}")
@@ -193,6 +205,12 @@ def schedule(args):
         input_path = None
         notebook = args.notebook
 
+    extra_fns = []
+    if args.extra:
+        extra_fns.append(base_extras(load_extra(args.extra)))
+    if args.emr:
+        extra_fns.append(emr.add_emr_cluster(args.emr))
+
     run.schedule(
         rule_name=args.name,
         schedule=args.at,
@@ -204,7 +222,7 @@ def schedule(args):
         parameters=params,
         role=args.role,
         instance_type=args.instance,
-        extra_args=load_extra(args.extra),
+        extra_fns=extra_fns,
     )
 
 
@@ -297,6 +315,10 @@ def main():
         help="Extra arguments to pass to SageMaker processing formatted as JSON (use @filename to read JSON from a file) (default: None)",
     )
     run_parser.add_argument(
+        "--emr",
+        help="The name of an EMR cluster to connect to for SparkMagic (default: None)"
+    )
+    run_parser.add_argument(
         "--output-dir",
         help="The directory to download the notebook to (default: .)",
         default=".",
@@ -383,10 +405,14 @@ def main():
         default="notebook-runner",
     )
     schedule_parser.add_argument(
+        "--emr",
+        help="The name of an EMR cluster to connect to for SparkMagic (default: None)"
+    )
+    schedule_parser.add_argument(
         "--extra",
         help="Extra arguments to pass to SageMaker processing formatted as JSON (use @filename to read JSON from a file) (default: None)",
     )
-    schedule_parser.add_argument("--at", help="When to run the notebook")
+    schedule_parser.add_argument("--at", help="When to run the notebook (see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html for syntax)")
     schedule_parser.add_argument(
         "--event", help="Event that will trigger the notebook run"
     )

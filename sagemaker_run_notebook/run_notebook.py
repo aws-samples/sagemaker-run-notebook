@@ -648,7 +648,7 @@ def invoke(
     parameters={},
     role,
     instance_type="ml.m5.large",
-    extra_args=None,
+    extra_fns=[],
     session=None,
 ):
     session = ensure_session(session)
@@ -673,6 +673,10 @@ def invoke(
         input_path = upload_notebook(notebook)
     if output_prefix is None:
         output_prefix = get_output_prefix()
+
+    extra_args = {}
+    for f in extra_fns:
+        extra_args = f(extra_args)
 
     args = {
         "image": image,
@@ -716,7 +720,7 @@ def schedule(
     parameters={},
     role,
     instance_type="ml.m5.large",
-    extra_args=None,
+    extra_fns=[],
     session=None,
 ):
     kwargs = {}
@@ -745,6 +749,10 @@ def schedule(
         input_path = upload_notebook(notebook)
     if output_prefix is None:
         output_prefix = get_output_prefix()
+
+    extra_args = {}
+    for f in extra_fns:
+        extra_args = f(extra_args)
 
     args = {
         "image": image,
