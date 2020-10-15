@@ -136,6 +136,7 @@ def merge_extra(orig, extra):
             for k, v in extra.items()
             if k in ["ExperimentConfig", "NetworkConfig", "StoppingCondition", "Tags"]
         },
+        "Environment": {**orig.get("Environment", {}), **extra.get("Environment", {})}
     }
     return result
 
