@@ -164,9 +164,6 @@ Resources:
               - logs:PutLogEvents
               - logs:CreateLogGroup
               - logs:DescribeLogStreams
-              - s3:GetObject
-              - s3:PutObject
-              - s3:ListBucket
               - ecr:GetAuthorizationToken
               - ecr:BatchCheckLayerAvailability
               - ecr:GetDownloadUrlForLayer
@@ -176,7 +173,7 @@ Resources:
             Effect: Allow
             Action:
               - s3:GetObject
-              - s3:LisBucket
+              - s3:ListBucket
               - s3:PutObject
             Resource: 
               - 'arn:aws:s3:::*SageMaker*'
