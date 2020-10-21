@@ -45,7 +45,9 @@
 #   If your notebook doesn't need any other permissions to run, you can just run it with the 
 #   "BasicExecuteNotebookRole-<region>". If you want your notebook to run with more permissions (e.g.,
 #   you want to access data RDS or run a job in AWS Glue), you can add the policy "ExecuteNotebookContainerPolicy-<region>"
-#   to a role that has the other permissions you want your notebook to have.
+#   to a role that has the other permissions you want your notebook to have. Note that the "ExecuteNotebookContainerPolicy-<region>"
+#   has all the permissions that you need to attach the job to a VPC. If you don't want these permissions, you can remove the 
+#   sid "vpcattach" from that policy.
 #
 # Executing the Lambda
 # 
@@ -179,6 +181,20 @@ Resources:
               - 'arn:aws:s3:::*SageMaker*'
               - 'arn:aws:s3:::*Sagemaker*'
               - 'arn:aws:s3:::*sagemaker*'
+          - Sid: vpcattach
+            Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DeleteNetworkInterface
+              - ec2:CreateNetworkInterfacePermission
+              - ec2:DeleteNetworkInterface
+              - ec2:DeleteNetworkInterfacePermission
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DescribeVpcs
+              - ec2:DescribeDhcpOptions
+              - ec2:DescribeSubnets
+              - ec2:DescribeSecurityGroups
+            Resource: '*'
   ContainerBuildRole:
     Type: 'AWS::IAM::Role'
     Properties:
