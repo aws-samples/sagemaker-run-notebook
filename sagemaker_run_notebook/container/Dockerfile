@@ -15,7 +15,7 @@ RUN if which python; then echo Python already installed; else \
     pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*; fi
 COPY requirements.txt /tmp/requirements.txt
-RUN pip install papermill jupyter nteract-scrapbook boto3 requests==2.20.1 && pip install -r /tmp/requirements.txt
+RUN pip install papermill jupyter nteract-scrapbook boto3 requests && pip install -r /tmp/requirements.txt
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PATH="/opt/program:${PATH}"
