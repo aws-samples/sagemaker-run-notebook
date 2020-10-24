@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.16.0 (2020-10-23)
+
+Users moving to this version should update their Lambda function and permissions by running:
+
+```shell
+$ run-notebook create-infrastructure --update
+```
+
+### Features
+
+* Added the ability to run notebooks connected to an EMR cluster using SparkMagic. See the [EMR examples][EMR example] for more information on using this feature.
+* Add the permissions to the default execution policy and role that allow notebook executions to attach to user VPCs via the `--extra` option.
+
+[EMR example]: https://github.com/aws-samples/sagemaker-run-notebook/tree/master/examples/EMR
+
+### Bug fixes
+
+* Pass environment variables specified in `--extra` parameters through to the notebook execution.
+* Restrict S3 permissions in the default role to buckets whose name contains the word "SageMaker".
+* Unpin the version of the Python "requests" library because it is (a) no longer necessary and (b) cause a dependency error with the latest version of boto3.
+
 ## v0.15.0 (2020-09-23)
 
 ### Bugs

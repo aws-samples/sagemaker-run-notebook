@@ -164,12 +164,12 @@ When the notebook has run, you can find the jobs with `aws sagemaker list-proces
 
 To follow this recipe, you'll need to have AWS credentials set up that give you full permission on CloudFormation. You'll add more permissions with the installed policy later in the recipe.
 
-You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.15.0.tar.gz.
+You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.16.0.tar.gz.
 
 #### 1. Install the library
 
 ```sh
-$ pip install sagemaker_run_notebook-0.15.0.tar.gz
+$ pip install sagemaker_run_notebook-0.16.0.tar.gz
 ```
 
 This installs the sagemaker run notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in "Using the JupyterLab Extension" for more information.
