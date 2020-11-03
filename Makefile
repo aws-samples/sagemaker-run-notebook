@@ -13,7 +13,7 @@
 
 .PHONY: clean artifacts release link install test run cfntemplate docs
 
-release: install test
+release: install test docs
 	make artifacts
 
 install: clean

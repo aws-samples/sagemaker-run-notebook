@@ -87,6 +87,9 @@ setuptools.setup(
             "python-minifier",
             "black",
             "pytest",
+            "sphinx",
+            "sphinx_rtd_theme",
+            "autodocsumm",
             "jupyterlab~=1.2",
         ]
     },
