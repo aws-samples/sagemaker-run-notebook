@@ -12,7 +12,7 @@
 
 VERSION=0.16.0
 
-make artifacts
+make artifacts docs
 
 rm -rf manual_dist
 mkdir -p manual_dist
@@ -22,3 +22,4 @@ cp scripts/lifecycle-config/start.sh manual_dist/
 cp scripts/studio/install-run-notebook.sh manual_dist/
 gtar czf manual_dist/container.tar.gz container
 cp sagemaker_run_notebook/cloudformation.yml manual_dist/
+(cd docs/build/html; gtar czf ../../../manual_dist/docs.tar.gz .)

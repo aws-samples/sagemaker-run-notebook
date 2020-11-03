@@ -11,7 +11,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-.PHONY: clean artifacts release link install test run cfntemplate
+.PHONY: clean artifacts release link install test run cfntemplate docs
 
 release: install test
 	make artifacts
@@ -24,6 +24,7 @@ install: clean
 clean:
 	rm -f sagemaker_run_notebook/cloudformation.yml
 	rm -rf build/dist
+	rm -rf docs/build/html/*
 
 cfntemplate: sagemaker_run_notebook/cloudformation.yml
 
@@ -38,3 +39,6 @@ test:
   # No python tests implemented yet
 	# pytest -v .
 	black --check .
+
+docs:
+	(cd docs; make html)
