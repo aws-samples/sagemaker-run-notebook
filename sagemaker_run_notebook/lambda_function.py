@@ -90,7 +90,9 @@ def execute_notebook(
         "StoppingCondition": {"MaxRuntimeInSeconds": 7200},
         "AppSpecification": {
             "ImageUri": image,
-            "ContainerArguments": ["run_notebook",],
+            "ContainerArguments": [
+                "run_notebook",
+            ],
         },
         "RoleArn": role,
         "Environment": {},
@@ -136,7 +138,7 @@ def merge_extra(orig, extra):
             for k, v in extra.items()
             if k in ["ExperimentConfig", "NetworkConfig", "StoppingCondition", "Tags"]
         },
-        "Environment": {**orig.get("Environment", {}), **extra.get("Environment", {})}
+        "Environment": {**orig.get("Environment", {}), **extra.get("Environment", {})},
     }
     return result
 

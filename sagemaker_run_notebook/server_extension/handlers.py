@@ -55,9 +55,9 @@ class BaseHandler(APIHandler):
     def check_json(self):
         """Check to see if the incoming POST data is in JSON encoded format, cause that's all we understand.
 
-      If it is in another format, write a 400 back to the client and return False, indicating that the 
-      handler method should return immediately. Otherwise, return True.
-      """
+        If it is in another format, write a 400 back to the client and return False, indicating that the
+        handler method should return immediately. Otherwise, return True.
+        """
         if self.request.headers["Content-Type"] != "application/json":
             self.set_status(
                 400,
@@ -74,14 +74,14 @@ class BaseHandler(APIHandler):
     def required_params(self, params, required):
         """Check the incoming POST parameters to make sure that all the required parameters are included.
 
-      Args:
-        params (dict): The dictionary of params that was POSTed.
-        required (list): A list of parameters that must be present in the params
+        Args:
+          params (dict): The dictionary of params that was POSTed.
+          required (list): A list of parameters that must be present in the params
 
-      Returns:
-        True, if all the required parameters are present and processing can continue. 
-        False, if there are missing paramters. Processing should return right away, the HTTP response is written already
-      """
+        Returns:
+          True, if all the required parameters are present and processing can continue.
+          False, if there are missing paramters. Processing should return right away, the HTTP response is written already
+        """
         for param in required:
             if param not in params:
                 self.set_status(400, "Missing parameter: '{}'".format(param))
@@ -96,16 +96,16 @@ class BaseHandler(APIHandler):
 
     def load_params(self, required):
         """Loads the parameters to the POST request, checking for errors.
-      The request must have the Content-Type 'application/json', be a well-formatted JSON object, and 
-      contain all the keys included in the required list.
+        The request must have the Content-Type 'application/json', be a well-formatted JSON object, and
+        contain all the keys included in the required list.
 
-      Args:
-        required (list): The list of keys that must be inluded in the input for it to be valid.
+        Args:
+          required (list): The list of keys that must be inluded in the input for it to be valid.
 
-      Returns:
-        A dict object with the POSTed parameters if the are valid and None otherwise. If None is returned, processings
-        the request should stop, the HTTP response has already been written.
-      """
+        Returns:
+          A dict object with the POSTed parameters if the are valid and None otherwise. If None is returned, processings
+          the request should stop, the HTTP response has already been written.
+        """
         if not self.check_json():
             return None
 
@@ -161,8 +161,8 @@ class RunsHandler(BaseHandler):
 
     async def get(self):
         """
-    Handler for listing the notebook runs.
-    """
+        Handler for listing the notebook runs.
+        """
         try:
             await self.tracker.update()
             runs = list(self.tracker)

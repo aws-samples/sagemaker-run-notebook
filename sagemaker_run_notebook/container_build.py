@@ -119,7 +119,7 @@ def log_stream(client, log_group, stream_name, position):
         log_group (str): The name of the log group.
         stream_name (str): The name of the specific stream.
         position (Position): A tuple with the time stamp value to start reading the logs from and
-                             The number of log entries to skip at the start. This is for when 
+                             The number of log entries to skip at the start. This is for when
                              there are multiple entries at the same timestamp.
         start_time (int): The time stamp value to start reading the logs from (default: 0).
         skip (int): The number of log entries to skip at the start (default: 0). This is for when there are

@@ -82,8 +82,19 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     install_requires=required_packages,
-    extras_require={"dev": ["python-minifier", "black", "pytest", "jupyterlab~=1.2",]},
-    entry_points={"console_scripts": ["run-notebook=sagemaker_run_notebook.cli:main",]},
+    extras_require={
+        "dev": [
+            "python-minifier",
+            "black",
+            "pytest",
+            "jupyterlab~=1.2",
+        ]
+    },
+    entry_points={
+        "console_scripts": [
+            "run-notebook=sagemaker_run_notebook.cli:main",
+        ]
+    },
     include_package_data=True,
     package_data={"sagemaker_run_notebook": ["cloudformation.yml", "container/**"]},
 )

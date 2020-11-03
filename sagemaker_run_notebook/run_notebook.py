@@ -59,7 +59,7 @@ def abbreviate_role(role):
 
 
 def upload_notebook(notebook, session=None):
-    """Uploads a notebook to S3 in the default SageMaker Python SDK bucket for 
+    """Uploads a notebook to S3 in the default SageMaker Python SDK bucket for
     this user. The resulting S3 object will be named "s3://<bucket>/papermill-input/notebook-YYYY-MM-DD-hh-mm-ss.ipynb".
 
     Args:
@@ -67,7 +67,7 @@ def upload_notebook(notebook, session=None):
         The filename of the notebook you want to upload. (Required)
       session (boto3.Session):
         A boto3 session to use. Will create a default session if not supplied. (Default: None)
-    
+
     Returns:
       The resulting object name in S3 in URI format.
     """
@@ -76,7 +76,7 @@ def upload_notebook(notebook, session=None):
 
 
 def upload_fileobj(notebook_fileobj, session=None):
-    """Uploads a file object to S3 in the default SageMaker Python SDK bucket for 
+    """Uploads a file object to S3 in the default SageMaker Python SDK bucket for
     this user. The resulting S3 object will be named "s3://<bucket>/papermill-input/notebook-YYYY-MM-DD-hh-mm-ss.ipynb".
 
     Args:
@@ -84,7 +84,7 @@ def upload_fileobj(notebook_fileobj, session=None):
         A file object (as returned from open) that is reading from the notebook you want to upload. (Required)
       session (boto3.Session):
         A boto3 session to use. Will create a default session if not supplied. (Default: None)
-    
+
     Returns:
       The resulting object name in S3 in URI format.
     """
@@ -185,7 +185,9 @@ def execute_notebook(
         "StoppingCondition": {"MaxRuntimeInSeconds": 7200},
         "AppSpecification": {
             "ImageUri": image,
-            "ContainerArguments": ["run_notebook",],
+            "ContainerArguments": [
+                "run_notebook",
+            ],
         },
         "RoleArn": role,
         "Environment": {},
@@ -217,7 +219,7 @@ def wait_for_complete(job_name, progress=True, sleep_time=10, session=None):
         The number of seconds between polls. (Default: 10)
       session (boto3.Session):
         A boto3 session to use. Will create a default session if not supplied. (Default: None)
-    
+
     Returns:
       A tuple with the job status and the failure message if any.
     """
@@ -247,7 +249,7 @@ def download_notebook(job_name, output=".", session=None):
       output (str): The directory to copy the output file to. (Default: the current working directory)
       session (boto3.Session):
         A boto3 session to use. Will create a default session if not supplied. (Default: None)
-    
+
     Returns:
       The filename of the downloaded notebook.
     """
@@ -289,13 +291,13 @@ def run_notebook(
         parameters (dict): The dictionary of parameters to pass to the notebook (default: {}).
         role (str): The name of a role to use to run the notebook (default: calls get_execution_role()).
         instance_type (str): The SageMaker instance to use for executing the job (default: ml.m5.large).
-        output_prefix (str): The prefix path in S3 for where to store the output notebook 
+        output_prefix (str): The prefix path in S3 for where to store the output notebook
                              (default: determined based on SageMaker Python SDK)
         output (str): The directory to copy the output file to (default: the current working directory).
         session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
 
     Returns:
-        A tuple with the processing job name, the job status, the failure reason (or None) and the the path to 
+        A tuple with the processing job name, the job status, the failure reason (or None) and the the path to
         the result notebook. The output notebook name is formed by adding a timestamp to the original notebook name.
     """
     session = ensure_session(session)
@@ -323,7 +325,7 @@ def run_notebook(
 
 def stop_run(job_name, session=None):
     """Stop the named processing job
-    
+
     Args:
        job_name (string): The name of the job to stop
        session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None)."""
@@ -335,7 +337,7 @@ def stop_run(job_name, session=None):
 def describe_runs(n=0, notebook=None, rule=None, session=None):
     """Returns a generator of descriptions for all the notebook runs. See :meth:`describe_run` for details of
     the description.
-    
+
     Args:
        n (int): The number of runs to return or all runs if 0 (default: 0)
        notebook (str): If not None, return only runs of this notebook (default: None)
@@ -372,7 +374,7 @@ def describe_run(job_name, session=None):
     Args:
      job_name (str): The name of the processing job that ran the notebook.
 
-    Returns: 
+    Returns:
       A dictionary with keys for each element of the job description. For example::
 
       {'Notebook': 'scala-spark-test.ipynb',
@@ -487,10 +489,10 @@ class NewJobs:
 
 class NotebookRunTracker:
     """
-  NotebookRunTracker keeps track of many recent running jobs and optimizes the number of boto calls
-  you're doing to get the status by remembering previous runs and knowing that only in progress jobs can 
-  change status (and therefore need to be polled).
-  """
+    NotebookRunTracker keeps track of many recent running jobs and optimizes the number of boto calls
+    you're doing to get the status by remembering previous runs and knowing that only in progress jobs can
+    change status (and therefore need to be polled).
+    """
 
     # We store the list backwards from how it's viewed outside so that we can just append new jobs on
     # the end.
@@ -563,11 +565,11 @@ class NotebookRunTracker:
 def list_runs(n=0, notebook=None, rule=None, session=None):
     """Returns a pandas data frame of the runs, with the most recent at the top.
 
-   Args:
-       n (int): The number of runs to return or all runs if 0 (default: 0)
-       notebook (str): If not None, return only runs of this notebook (default: None)
-       rule (str): If not None, return only runs invoked by this rule (default: None)
-       session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
+    Args:
+        n (int): The number of runs to return or all runs if 0 (default: 0)
+        notebook (str): If not None, return only runs of this notebook (default: None)
+        rule (str): If not None, return only runs invoked by this rule (default: None)
+        session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
     """
     import pandas as pd  # pylint: disable=import-error
 
@@ -584,7 +586,7 @@ def download_all(lis, output=".", session=None):
       output (str): The directory to copy the output files to. (Default: the current working directory)
       session (boto3.Session):
         A boto3 session to use. Will create a default session if not supplied. (Default: None)
-    
+
     Returns:
       The list of the filenames of the downloaded notebooks.
     """
@@ -731,7 +733,7 @@ def invoke(
     input_path=None,
     output_prefix=None,
     parameters={},
-    role = None,
+    role=None,
     instance_type="ml.m5.large",
     extra_fns=[],
     session=None,
@@ -743,7 +745,7 @@ def invoke(
     the Lambda function does without waiting for the notebook execution. To wait for the job and download the
     results, see :meth:`wait_for_complete` and :meth:`download_notebook`.
 
-    To add extra arguments to the SageMaker Processing job, you can use the `extra_fns` argument. Each element of 
+    To add extra arguments to the SageMaker Processing job, you can use the `extra_fns` argument. Each element of
     that list is a function that takes a dict and returns a dict with new fields added. For example::
 
         def time_limit(seconds):
@@ -756,12 +758,12 @@ def invoke(
 
     Args:
         notebook (str): The notebook name. If `input_path` is None, this is a file to be uploaded before the Lambda is called.
-                        all cases it is used as the name of the notebook when it's running and serves as the base of the 
+                        all cases it is used as the name of the notebook when it's running and serves as the base of the
                         output file name (with a timestamp attached) (required).
         image (str): The ECR image that defines the environment to run the job (Default: "notebook-runner").
         input_path (str): The S3 object containing the notebook. If this is None, the `notebook` argument is
                           taken as a local file to upload (default: None).
-        output_prefix (str): The prefix path in S3 for where to store the output notebook 
+        output_prefix (str): The prefix path in S3 for where to store the output notebook
                              (default: determined based on SageMaker Python SDK).
         parameters (dict): The dictionary of parameters to pass to the notebook (default: {}).
         role (str): The name of a role to use to run the notebook. This can be a name local to the account or a full ARN
@@ -998,7 +1000,7 @@ def unschedule(rule_name, session=None):
 
 def describe_schedules(n=0, rule_prefix=None, session=None):
     """A generator that returns descriptions of all the notebook schedule rules
-    
+
     Args:
        n (int): The number of rules to return or all runs if 0 (default: 0)
        rule_prefix (str): If not None, return only rules whose names begin with the prefix (default: None)
@@ -1032,7 +1034,7 @@ def describe_schedule(rule_name, rule_item=None, session=None):
      rule_name (str): The name of the schedule rule to describe. (Required)
      rule_item: Only used to optimize :meth:`describe_schedules`. Should be omitted in normal use. (Default: None)
 
-    Returns: 
+    Returns:
       A dictionary with keys for each element of the rule. For example::
 
         {'name': 'Powers',
@@ -1046,7 +1048,7 @@ def describe_schedule(rule_name, rule_item=None, session=None):
         'state': 'ENABLED',
         'input_path': 's3://sagemaker-us-west-2-123456789012/papermill_input/notebook-2020-11-02-19-49-24.ipynb',
         'output_prefix': 's3://sagemaker-us-west-2-123456789012/papermill_output'}
-     """
+    """
     rule_name = RULE_PREFIX + rule_name
     session = ensure_session(session)
     ev = session.client("events")
@@ -1106,10 +1108,10 @@ def base_role(s):
 def list_schedules(n=0, rule_prefix=None, session=None):
     """Return a pandas data frame of the schedule rules.
 
-   Args:
-       n (int): The number of rules to return or all rules if 0 (default: 0)
-       rule_prefix (str): If not None, return only rules whose names begin with the prefix (default: None)
-       session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
+    Args:
+        n (int): The number of rules to return or all rules if 0 (default: 0)
+        rule_prefix (str): If not None, return only rules whose names begin with the prefix (default: None)
+        session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
     """
     import pandas as pd  # pylint: disable=import-error
 

@@ -55,12 +55,15 @@ def load_extra(extra):
     else:
         return json.loads(extra)
 
+
 def base_extras(extras):
     def proc(extra):
         if extra:
             raise "Base extras must be first"
         return extras
+
     return proc
+
 
 def run_notebook(args):
     params = process_params(args.p)
@@ -278,7 +281,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="A command line interface for running and scheduling notebooks in SageMaker"
     )
-    parser.add_argument("-v", "--version", action="store_true", help="Display current version and exit")
+    parser.add_argument(
+        "-v", "--version", action="store_true", help="Display current version and exit"
+    )
     subparsers = parser.add_subparsers(dest="subcommand")
 
     run_parser = subparsers.add_parser("run", help="Run a notebook now")
@@ -316,7 +321,7 @@ def main():
     )
     run_parser.add_argument(
         "--emr",
-        help="The name of an EMR cluster to connect to for SparkMagic (default: None)"
+        help="The name of an EMR cluster to connect to for SparkMagic (default: None)",
     )
     run_parser.add_argument(
         "--output-dir",
@@ -406,13 +411,16 @@ def main():
     )
     schedule_parser.add_argument(
         "--emr",
-        help="The name of an EMR cluster to connect to for SparkMagic (default: None)"
+        help="The name of an EMR cluster to connect to for SparkMagic (default: None)",
     )
     schedule_parser.add_argument(
         "--extra",
         help="Extra arguments to pass to SageMaker processing formatted as JSON (use @filename to read JSON from a file) (default: None)",
     )
-    schedule_parser.add_argument("--at", help="When to run the notebook (see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html for syntax)")
+    schedule_parser.add_argument(
+        "--at",
+        help="When to run the notebook (see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html for syntax)",
+    )
     schedule_parser.add_argument(
         "--event", help="Event that will trigger the notebook run"
     )
@@ -518,7 +526,7 @@ def main():
         action="store_true",
         help="Don't show the logs of the running CodeBuild build",
     )
-    
+
     container_parser.set_defaults(func=create_container)
 
     args = parser.parse_args()

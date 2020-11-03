@@ -82,7 +82,10 @@ def run_notebook():
         print("Notebook params = {}".format(params))
         arg_map = dict(kernel_name=kernel) if kernel else {}
         papermill.execute_notebook(
-            notebook_file, output_notebook, params, **arg_map,
+            notebook_file,
+            output_notebook,
+            params,
+            **arg_map,
         )
         print("Execution complete")
 
@@ -103,10 +106,12 @@ def run_notebook():
     else:
         print("Output was written to {}".format(output_notebook))
 
+
 def available_kernels():
     """Return the list of kernels"""
     mgr = kernelspec.KernelSpecManager()
     return list(mgr.find_kernel_specs().keys())
+
 
 def kernel_for(notebook):
     """Read the notebook and extract the kernel name, if any"""
@@ -119,6 +124,7 @@ def kernel_for(notebook):
             if ks:
                 return ks["name"]
     return None
+
 
 if __name__ == "__main__":
     run_notebook()

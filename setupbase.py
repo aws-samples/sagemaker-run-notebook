@@ -58,7 +58,10 @@ node_modules = pjoin(HERE, "node_modules")
 SEPARATORS = os.sep if os.altsep is None else os.sep + os.altsep
 
 npm_path = ":".join(
-    [pjoin(HERE, "node_modules", ".bin"), os.environ.get("PATH", os.defpath),]
+    [
+        pjoin(HERE, "node_modules", ".bin"),
+        os.environ.get("PATH", os.defpath),
+    ]
 )
 
 if "--skip-npm" in sys.argv:
@@ -86,8 +89,7 @@ def get_version(file, name="__version__"):
 
 
 def ensure_python(specs):
-    """Given a list of range specifiers for python, ensure compatibility.
-    """
+    """Given a list of range specifiers for python, ensure compatibility."""
     if not isinstance(specs, (list, tuple)):
         specs = [specs]
     v = sys.version_info
@@ -218,7 +220,7 @@ def run(cmd, **kwargs):
 
 def is_stale(target, source):
     """Test whether the target file/directory is stale based on the source
-       file/directory.
+    file/directory.
     """
     if not os.path.exists(target):
         return True
@@ -490,8 +492,7 @@ def _wrap_command(cmds, cls, strict=True):
 
 
 def _get_file_handler(package_data_spec, data_files_spec):
-    """Get a package_data and data_files handler command.
-    """
+    """Get a package_data and data_files handler command."""
 
     class FileHandler(BaseCommand):
         def run(self):

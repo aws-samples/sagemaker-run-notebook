@@ -64,8 +64,7 @@ except ModuleNotFoundError:
     pass
 
 if has_jupyter:
-    """Initialize the backend server extension, if jupyter is installed.
-  """
+    """Initialize the backend server extension, if jupyter is installed."""
     # need this in order to show version in `jupyter serverextension list`
     from sagemaker_run_notebook.server_extension._version import __version__
 
@@ -73,13 +72,11 @@ if has_jupyter:
     from sagemaker_run_notebook.server_extension.run import Scheduler
 
     def _jupyter_server_extension_paths():
-        """Declare the Jupyter server extension paths.
-      """
+        """Declare the Jupyter server extension paths."""
         return [{"module": "sagemaker_run_notebook"}]
 
     def load_jupyter_server_extension(nbapp):
-        """Load the Jupyter server extension.
-      """
+        """Load the Jupyter server extension."""
         scheduler = Scheduler(nbapp.web_app.settings["contents_manager"])
         nbapp.web_app.settings["scheduler"] = scheduler
         setup_handlers(nbapp.web_app)
