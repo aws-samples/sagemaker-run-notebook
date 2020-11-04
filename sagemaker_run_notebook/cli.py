@@ -273,7 +273,7 @@ def create_container(args):
     )
 
 
-def main():
+def cli_argparser():
     region = boto3.session.Session().region_name
     default_execution_role = f"BasicExecuteNotebookRole-{region}"
     container_build_role = f"ExecuteNotebookCodeBuildRole-{region}"
@@ -496,7 +496,7 @@ def main():
     )
     container_parser.add_argument(
         "--base",
-        help=f"The Docker image to base the new image on (default: (default={container_build.default_base})",
+        help=f"The Docker image to base the new image on (default: {container_build.default_base})",
         default=container_build.default_base,
     )
     container_parser.add_argument(
@@ -529,6 +529,11 @@ def main():
 
     container_parser.set_defaults(func=create_container)
 
+    return parser
+
+
+def main():
+    parser = cli_argparser()
     args = parser.parse_args()
     if args.version:
         print("v{}".format(run.__version__))

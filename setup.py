@@ -90,6 +90,7 @@ setuptools.setup(
             "sphinx",
             "sphinx_rtd_theme",
             "autodocsumm",
+            "sphinx-argparse",
             "jupyterlab~=1.2",
         ]
     },

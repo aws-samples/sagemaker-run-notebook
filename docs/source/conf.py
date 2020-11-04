@@ -42,6 +42,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosectionlabel",
     "autodocsumm",
+    "sphinxarg.ext",
 ]
 
 source_suffix = ".rst"  # The suffix of source filenames.
