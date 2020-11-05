@@ -1,182 +1,67 @@
 # Quick Start
 
-This document outlines how to execute and schedule notebooks in SageMaker using SageMaker Processing Jobs, AWS Lambda, and Cloudwatch Events.
+> __TL;DR__ To be really quick, go straight to the instructions at [Setting up your environment](#setting-up-your-environment).
 
-Depending on your preference, we outline three ways to do this. All have the same functionality, but different interfaces. You can use them in combination if you choose.
+This document shows how to install and run the `sagemaker-run-notebooks` library that lets you run and schedule Jupyter notebook executions as SageMaker Processing Jobs.
 
-First, we show you how to use AWS tools directly to execute and schedule notebooks. To make the process easier, we have provided a CloudFormation template to set up the Lambda function you'll need and some IAM roles and policies that you'll use when running notebooks. We've also provided scripts for building and customizing the Docker container images that SageMaker Processing Jobs will use when running the notebooks.
+This library provides three interfaces to the notebook execution functionality:
 
-Second, we show you how to install and use the convenience package that wraps the AWS tools in a CLI and Python library to give you a more natural interface to running and scheduling notebooks.
+1. A command line interface (CLI)
+2. A Python library
+3. A JupyterLab extension that can be enabled for JupyterLab running locally, in SageMaker Studio, or on a SageMaker notebook instance
 
-Finally, for those who prefer an interactive experience, the convenience package includes a JupyterLab extension that can be enabled for JupyterLab running locally, in SageMaker Studio, or on a SageMaker notebook instance.
+Each of the interfaces has the same functionality, so which to use is a matter of preference. You can use them in combination if you choose. For example, you can launch a notebook execution from the CLI, but monitor and view the output using the JupyterLab extension.
 
 We use the open source tool [Papermill][papermill] to execute the notebooks. Papermill has many features, but one of the most interesting is that you can add parameters to your notebook runs. To do this, you set a tag on a single cell in your notebook that marks it as the "parameter cell". Papermill will insert a cell directly after that at runtime with the parameter values you set when starting the job. You can see details in the Papermill docs [here][papermill-parameters].
+
+More detailed documentation, including full API documentation for the library and all the options for the
+can be downloaded as HTML files from the [latest GitHub release][release]. Download `docs.tar.gz` and untar it with `tar xzf docs.tar.gz`. Then open the file `sagemaker-run-notebook-docs/index.html` in your browser
+to view the documentation.
 
 [papermill]: https://github.com/nteract/papermill
 [papermill-parameters]: https://papermill.readthedocs.io/en/latest/usage-parameterize.html
 
-You can go directly to the quick start you prefer:
+Start by setting up your environment and then look at the instructions for the interface you want to use.
 
-* [Using existing AWS primitives](#using-existing-aws-primitives)
-* [Using the CLI provided by the convenience package](#using-the-cli-provided-by-the-convenience-package)
-* [Activating the JupyterLab extension](#activating-the-jupyterlab-extension)
+Contents:
+
+- [Quick Start](#quick-start)
+  - [Setting up your environment](#setting-up-your-environment)
+      - [1. Install the library](#1-install-the-library)
+      - [2. Create roles, policies and the Lambda function](#2-create-roles-policies-and-the-lambda-function)
+      - [3. Create a Docker container to run the notebook](#3-create-a-docker-container-to-run-the-notebook)
+  - [Use the command-line tool to execute and schedule notebooks](#use-the-command-line-tool-to-execute-and-schedule-notebooks)
+      - [Run a notebook on demand](#run-a-notebook-on-demand)
+      - [Run a notebook on a schedule](#run-a-notebook-on-a-schedule)
+      - [See the jobs that have run and retrieve output](#see-the-jobs-that-have-run-and-retrieve-output)
+  - [Using the Python library](#using-the-python-library)
+  - [Activating the JupyterLab extension](#activating-the-jupyterlab-extension)
+      - [In a SageMaker Notebook instance](#in-a-sagemaker-notebook-instance)
+      - [In SageMaker Studio](#in-sagemaker-studio)
+      - [On a laptop or other system](#on-a-laptop-or-other-system)
+  - [Using the JupyterLab extension](#using-the-jupyterlab-extension)
 
 The files we reference here can be downloaded from the [latest GitHub release][release].
 
+If you want to schedule notebooks without using the library, there are resources included in the
+release to help you do that. See the [DIY instructions][DIY] on GitHub for details.
+
 [release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
+[DIY]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md
 
-## Using existing AWS primitives
-
-You'll need to have AWS credentials set up that give you full permission on SageMaker, IAM, CloudFormation, Lambda, Cloudwatch Events, and ECR. You will also need to have Docker installed locally.
-
-You'll need two files from the [release on GitHub][release]: cloudformation.yml and container.tar.gz.
-
-> _Note:_ This Quick Start shows all these operations using the AWS CLI, but the equivalent operations using the Boto3 library in Python or language bindings in other languages will work just as well.
-
-#### 1. Run CloudFormation template to set up roles, policies, and the Lambda function
-
-```sh
-$ aws cloudformation create-stack --stack-name sagemaker-run-notebook --template-body file://$(pwd)/cloudformation.yml --capabilities CAPABILITY_NAMED_IAM
-```
-
-To see if the stack was successfully created, you can use the command:
-
-```sh
-$ aws cloudformation describe-stacks --stack-name sagemaker-run-notebook
-```
-
-And the `StackStatus` in the command should be `CREATE_COMPLETE`.
-
-One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks. For complete information on the roles and policies as well as the source code for the Lambda function, see the `cloudformation.yml` file which you can view [on GitHub][cfn-template] or download from the [latest release][release].
-
-[cfn-template]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/sagemaker_run_notebook/cloudformation.yml
-
-#### 2. Create a container image to run your notebook
-
-Jobs run in SageMaker Processing Jobs run inside a Docker container. For this project, we have defined
-the container to include a script to set up the environment and run Papermill on the
-input notebook.
-
-The `container.tar.gz` file in the [latest release][release] contains everything you need to build and customize the container. You can edit the `requirements.txt` file to specify Python libraries that your notebooks will need as described [in the pip documentation][requirements].
-
-```sh
-$ tar xvf container.tar.gz
-$ cd container
-<edit requirements.txt to add any dependencies you need>
-$ ./build-and-push.sh notebook-runner
-```
-
-> _Note:_ You must have Docker installed for `build-and-push.sh` to work. If you prefer not to install and run Docker, use the convenience package as described in [Create a Docker container to run the notebook](#3-create-a-docker-container-to-run-the-notebook). That technique uses CodeBuild to build the container image to use.
-
-#### 3. Copy your notebook to S3
-
-```
-$ aws s3 cp mynotebook.ipynb s3://mybucket/
-```
-
-(replace "mynotebook" and "mybucket" with appropriate values)
-
-#### 4. Run a notebook on demand
-
-```sh
-$ aws lambda invoke --function-name RunNotebook --payload '{"input_path": "s3://mybucket/mynotebook.ipynb", "parameters": {"p": 0.75}}' result.json
-```
-  
-The file `result.json` will have your SageMaker Processing job name.
-
-Now the job is running and it will take a few minutes to provision a node for processing and run.
-
-The Lambda function provided has many options for how your notebook is run (like customizing the container image, using a specific IAM role, etc.). You can see all of these in the Lambda function definition included in the CloudFormation template.
-
-You should feel free to customize the way the Lambda function calls SageMaker Processing to add any custom behavior that you would like to have.
-
-#### 5. View the job
-
-Extract the job name from the result.json and run the following command to view the job status:
-
-```sh
-$ aws sagemaker describe-processing-job  --processing-job-name myjob --output json
-{
-    ...
-    "ProcessingOutputConfig": {
-        "Outputs": [
-            {
-                ...
-                "S3Output": {
-                    "S3Uri": "s3://mybucket",
-                    ...
-                }
-            }
-        ]
-    },
-    ...
-    "Environment": {
-        ...
-        "PAPERMILL_OUTPUT": "/opt/ml/processing/output/mynotebook-2020-06-08-03-44-04.ipynb",
-        ...
-    },
-    ...
-    "ProcessingJobStatus": "InProgress",
-    ...
-}
-```
-
-By viewing the status in the result, you can see whether the job is in progress, succeeded, or failed.
-
-#### 6. Retrieve the output notebook
-
-When the job succeeds, the output is saved back to S3. To find the S3 object name, combine the output path from the processing job with the base file name from the environment variable `PAPERMILL_OUTPUT`. For instance, in the above example the output notebook would be `s3://mybucket//mynotebook-2020-06-08-03-44-04.ipynb`.
-
-You can then use the following command to copy the notebook to your local current directory:
-
-```sh
-$ aws s3 cp s3://outputpath/basename.ipynb .
-```
-
-#### 7. Schedule a notebook to run
-
-You can use CloudWatch Events to schedule notebook executions. For example, to run the notebook that we previously uploaded every day at 1:15 use the following commands:
-
-```sh
-$ aws events put-rule --name "RunNotebook-test" --schedule "cron(15 1 * * ? *)"
-$ aws lambda add-permission --statement-id EB-RunNotebook-test \
-              --action lambda:InvokeFunction \
-              --function-name RunNotebook \
-              --principal events.amazonaws.com \
-              --source-arn arn:aws:events:us-east-1:981276346578:rule/RunNotebook-test
-$ aws events put-targets --rule RunNotebook-test \
-      --targets '[{"Id": "Default", "Arn": "arn:aws:lambda:us-east-1:981276346578:function:RunNotebook", "Input": "{ \"input_path\": \"s3://mybucket/mynotebook.ipynb\", \"parameters\": {\"p\": 0.75}}"}]'
-```
-
-Substitute your account number in place of 981276346578 in the source ARN and the Lambda function ARN. Substitute the region name your working in for "us-east-1" in both ARNs.
-
-Substitute the location where you stored your notebook as the `input` path argument.
-
-The `Input` field in the `put-targets` call are the arguments to the Lambda function and they can be customized to anything the Lambda accepts. (See [`cloudformation.yml`][cfn-template] for the Lambda function definition.)
-
-Note that times are always in UTC. To see the full rules on times, view the Cloudwatch Events documentation here: [Schedule Expressions for Rules][sched]
-
-[sched]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-
-When the notebook has run, you can find the jobs with `aws sagemaker list-processing-jobs` and then describe the job and download the notebook as described above.
-
-## Using the CLI provided by the convenience package
+## Setting up your environment
 
 To follow this recipe, you'll need to have AWS credentials set up that give you full permission on CloudFormation. You'll add more permissions with the installed policy later in the recipe.
 
-You'll need installation file that you can download from the [latest release][release]: sagemaker_run_notebook-0.16.0.tar.gz.
-
 #### 1. Install the library
 
+You can install the library directly from the GitHub release using pip:
+
 ```sh
-$ pip install sagemaker_run_notebook-0.16.0.tar.gz
+$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.16.0/sagemaker_run_notebook-0.16.0.tar.gz
 ```
 
-This installs the sagemaker run notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in "Using the JupyterLab Extension" for more information.
-
-To get information on how to use the CLI, run `run-notebook --help`.
-
-The instructions here all use the CLI commands but you can also use the library from Python programs and Jupyter notebooks with a statement like `import sagemaker_run_notebook as run` and then `run.invoke(...)`, etc.
+This installs the sagemaker-run-notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in [Activating the JupyterLab Extension](#activating-the-jupyterlab-extension) for more information.
 
 #### 2. Create roles, policies and the Lambda function
 
@@ -184,9 +69,13 @@ The instructions here all use the CLI commands but you can also use the library 
 $ run-notebook create-infrastructure
 ```
 
-One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks. 
+One of the policies created here is `ExecuteNotebookClientPolicy-us-east-1` (replace `us-east-1` with the name of the region you're running in). If you're not running with administrative permissions, you should add that policy to the user or role that you're using to invoke and schedule notebooks.
 
-For complete information on the roles and policies as well as the source code for the Lambda function, see the [`cloudformation.yml` on GitHub][cfn-template].
+For complete information on the roles and policies, see the [`cloudformation-base.yml` on GitHub][cfn-template].
+The source code for the Lambda function is at [`lambda-function.py` on GitHub][lambda-function].
+
+[cfn-template]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/sagemaker_run_notebook/cloudformation-base.yml
+[lambda-function]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/sagemaker_run_notebook/lambda_function.py
 
 #### 3. Create a Docker container to run the notebook
 
@@ -198,19 +87,28 @@ input notebook.
 $ run-notebook create-container
 ```
 
-This creates a temporary project in AWS CodeBuild to build your Docker container image so there's no need to install Docker locally.
+This creates a temporary project in AWS CodeBuild to build your Docker container image so there's no need
+to install Docker locally.
 
-_Optional_: If you want to add custom dependencies to your container, you can create a requirements.txt file as described at [Requirements Files][requirements] in the `pip` documentation. Then add that to your CLI command like this:
+_Optional_: If you want to add custom dependencies to your container, you can create a requirements.txt file as
+described at [Requirements Files][requirements] in the `pip` documentation. Then add that to your CLI command
+like this:
 
 ```sh
 $ run-notebook create-container --requirements requirements.txt
 ```
 
-If you'd rather do the Docker build on your local system, you can use the recipe specified in [Create a container image to run your notebook](#2-create-a-container-image-to-run-your-notebook)
+More customization is possible. Run `run-notebook create-container --help` or see the docs for more information.
+
+If you'd rather do the Docker build on your local system, you can use the DIY recipe specified in [Create a container image to run your notebook][DIY-container].
 
 [requirements]: https://pip.pypa.io/en/stable/user_guide/#requirements-files
+[DIY-container]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md#2-create-a-container-image-to-run-your-notebook
+## Use the command-line tool to execute and schedule notebooks
 
-#### 4. Run a notebook on demand
+To get information on how to use the CLI, run `run-notebook --help` or view the help documentation described above.
+
+#### Run a notebook on demand
 
 To run a notebook:
 
@@ -220,7 +118,7 @@ $ run-notebook run mynotebook.ipynb -p p=0.5 -p n=200
 
 This will execute the notebook with the default configuration and, when the execution is complete, will download the resulting notebook. There are a lot of options to this command. Run `run-notebook run --help` for details.
 
-#### 5. Run a notebook on a schedule
+#### Run a notebook on a schedule
 
 ```sh
 $ run-notebook schedule --at "cron(15 1 * * ? *)" --name nightly weather.ipynb -p "name=Boston, MA"
@@ -228,7 +126,9 @@ $ run-notebook schedule --at "cron(15 1 * * ? *)" --name nightly weather.ipynb -
 
 Note that times are always in UTC. To see the full rules on times, view the Cloudwatch Events documentation here: [Schedule Expressions for Rules][sched]
 
-#### 6. See the jobs that have run and retrieve output
+[sched]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
+
+#### See the jobs that have run and retrieve output
 
 To see all the notebook executions that were run by the previous rule:
 
@@ -242,9 +142,49 @@ Each listed run will have a name. To download the result notebook, run:
 $ run-notebook download jobname
 ```
 
-## Activating the JupyterLab extension
+## Using the Python library
 
-The JupyterLab extension is included in the convenience package, so start by doing steps 1-3 in [Using the CLI provided by the convenience package](#using-the-cli-provided-by-the-convenience-package) above.
+The Python library lets you interact with notebook execution directly from Python code, for example
+in a Jupyter notebook or a Python program.
+
+To use the library, just import it. These examples assume you import it as "run":
+
+```python
+import sagemaker_run_notebook as run
+```
+
+To run a notebook immediately and wait for the result, use `invoke()`, `wait_for_complete()`, 
+and `download_notebook()`:
+
+```python
+job = run.invoke("powers.ipynb")
+run.wait_for_complete(job)
+run.download_notebook(job)
+```
+
+To schedule a notebook to run Sunday mornings at 3AM (UTC), use the `schedule()` function:
+
+```python
+run.schedule("powers.ipynb", rule_name="powers", schedule="cron(0 3 ? * SUN *)")
+```
+
+To see the last two scheduled runs for a rule:
+
+```python
+runs = run.list_runs(n=2, rule="powers")
+runs
+```
+
+And to download the output notebooks:
+
+```python
+run.download_all(runs)
+```
+
+For full API documentation for the library, download the docs from the [latest release][release]
+ and explore.
+
+## Activating the JupyterLab extension
 
 Once you have the infrastructure and containers set up, the best way to activate the extension will depend on your context.
 
@@ -293,7 +233,7 @@ $ jupyter lab
 > ```
 > Support for a newer version of JupyterLab should be available soon.
 
-#### Using the JupyterLab extension
+## Using the JupyterLab extension
 
 The JupyterLab extension feature adds a tab to the left sidebar in JupyterLab that lets you launch notebook executions, set up schedules, and view notebook runs and active schedules:
 
