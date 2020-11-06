@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.17.0 (2020-11-05)
+
+This is a documentation only release:
+
+* It adds the documentation tarball (`docs.tar.gz`) to the release.
+* It adds reasonable docstrings to all the exported functions in `sagemaker_run_notebook`.
+
 ## v0.16.0 (2020-10-23)
 
 Users moving to this version should update their Lambda function and permissions by running:
