@@ -58,7 +58,7 @@ To follow this recipe, you'll need to have AWS credentials set up that give you 
 You can install the library directly from the GitHub release using pip:
 
 ```sh
-$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.17.0/sagemaker_run_notebook-0.17.0.tar.gz
+$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.18.0/sagemaker_run_notebook-0.18.0.tar.gz
 ```
 
 This installs the sagemaker-run-notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in [Activating the JupyterLab Extension](#activating-the-jupyterlab-extension) for more information.

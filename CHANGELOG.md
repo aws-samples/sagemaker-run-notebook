@@ -1,11 +1,15 @@
 # Changelog
 
-## v0.17.0 (2020-11-05)
+## v0.18.0 (2020-11-06)
 
 This is a documentation only release:
 
 * It adds the documentation tarball (`docs.tar.gz`) to the release.
 * It adds reasonable docstrings to all the exported functions in `sagemaker_run_notebook`.
+
+## v0.17.0 (2020-11-05)
+
+Ignore. Not actually released.
 
 ## v0.16.0 (2020-10-23)
 
