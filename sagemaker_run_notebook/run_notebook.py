@@ -609,8 +609,7 @@ def ensure_session(session=None):
 
 
 code_file = "lambda_function.py"
-stage = os.getenv("STAGE", "backdev")
-lambda_function_name = "vp-sagemaker-setup-studio-{}-runNotebook".format(stage)
+lambda_function_name = "vp-sagemaker-setup-studio-backdev-runNotebook"
 lambda_description = (
     "A function to run Jupyter notebooks using SageMaker processing jobs"
 )
