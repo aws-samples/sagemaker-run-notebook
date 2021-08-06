@@ -609,7 +609,7 @@ def ensure_session(session=None):
 
 
 code_file = "lambda_function.py"
-stage = os.environ.get("AWS_DEFAULT_REGION")
+stage = os.getenv("STAGE", "backdev")
 lambda_function_name = "vp-sagemaker-setup-studio-{}-runNotebook".format(stage)
 lambda_description = (
     "A function to run Jupyter notebooks using SageMaker processing jobs"
