@@ -1,4 +1,7 @@
 # Changelog
+## v0.19.0 (2021-08-06)
+
+* Changed lambda naming for VP
 
 ## v0.18.0 (2020-11-06)
 
