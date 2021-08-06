@@ -828,7 +828,7 @@ def invoke(
     return job
 
 
-RULE_PREFIX = "RunNotebook-"
+RULE_PREFIX = "vp-sagemaker-setup-studio-backdev-runNotebook-"
 
 
 def schedule(
@@ -952,7 +952,7 @@ def schedule(
     lambda_.add_permission(
         StatementId="EB-{}".format(rule_name),
         Action="lambda:InvokeFunction",
-        FunctionName="RunNotebook",
+        FunctionName=lambda_function_name,
         Principal="events.amazonaws.com",
         SourceArn=rule_arn,
     )
@@ -984,7 +984,7 @@ def unschedule(rule_name, session=None):
 
     try:
         lambda_.remove_permission(
-            FunctionName="RunNotebook", StatementId="EB-{}".format(rule_name)
+            FunctionName=lambda_function_name, StatementId="EB-{}".format(rule_name)
         )
     except botocore.exceptions.ClientError as ce:
         message = ce.response.get("Error", {}).get("Message", "Unknown error")
