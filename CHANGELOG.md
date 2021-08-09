@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.22.0 (2021-08-09)
+
+* Yet another one
+
 ## v0.21.0 (2021-08-06)
 
 * Another naming change

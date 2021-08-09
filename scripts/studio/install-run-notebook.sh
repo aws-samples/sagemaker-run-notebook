@@ -1,4 +1,4 @@
-version=0.21.0
+version=0.22.0
 pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v${version}/sagemaker_run_notebook-${version}.tar.gz
 jlpm config set cache-folder /tmp/yarncache
 jupyter lab build --debug --minimize=False
