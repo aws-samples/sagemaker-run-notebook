@@ -609,7 +609,7 @@ def ensure_session(session=None):
 
 
 code_file = "lambda_function.py"
-lambda_function_name = "vp-sagemaker-setup-studio-backdev-runNotebook"
+lambda_function_name = "vp-sagemaker-setup-backdev-runNotebook"
 lambda_description = (
     "A function to run Jupyter notebooks using SageMaker processing jobs"
 )
@@ -828,7 +828,7 @@ def invoke(
     return job
 
 
-RULE_PREFIX = "vp-sagemaker-setup-studio-backdev-runNotebook-"
+RULE_PREFIX = "vp-sagemaker-setup-backdev-runNotebook-"
 
 
 def schedule(
