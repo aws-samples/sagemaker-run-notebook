@@ -1,5 +1,0 @@
-altair
-geopy
-requests
-pandas
-nteract-scrapbook

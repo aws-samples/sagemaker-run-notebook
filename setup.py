@@ -87,18 +87,7 @@ setuptools.setup(
             "python-minifier",
             "black",
             "pytest",
-            "sphinx",
-            "sphinx_rtd_theme",
-            "autodocsumm",
-            "sphinx-argparse",
             "jupyterlab~=1.2",
         ]
     },
-    entry_points={
-        "console_scripts": [
-            "run-notebook=sagemaker_run_notebook.cli:main",
-        ]
-    },
-    include_package_data=True,
-    package_data={"sagemaker_run_notebook": ["cloudformation.yml", "container/**"]},
 )

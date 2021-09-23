@@ -1,5 +1,0 @@
-altair==3.2
-geopy
-requests
-pandas
-nteract-scrapbook

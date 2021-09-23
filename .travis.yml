@@ -1,0 +1,28 @@
+dist: xenial
+language: python
+python:
+  - "3.8"
+  
+git:
+  depth: false
+
+# safelist
+branches:
+  only:
+  - master
+  - develop
+  - /^\d+\.(?:\d+|x)(?:\.x)?$/
+
+install:
+  - python setup.py sdist 
+
+script:
+  - black --check .
+
+deploy:
+  provider: releases
+  api_key: $GH_TOKEN
+  file: dist/sagemaker_run_notebook.0.22.0.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true
