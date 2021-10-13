@@ -22,7 +22,7 @@
 # 3. Do a local build to make sure everything is copasetic
 # 4. Commit and push these files along with the Changelog
 
-# TODO: Not yet implemtented
+# TODO: Not yet implemented
 # 5. Create a new release on github and upload the built files
 
 # For #5, you need to go to the GitHub UI and create the release.
