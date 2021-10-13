@@ -1067,7 +1067,7 @@ def describe_schedule(rule_name, rule_item=None, session=None):
     d = dict(
         name=rule_name[len(RULE_PREFIX) :],
         notebook=inp.get("notebook", ""),
-        parameters=inp.get("parameters", ""),
+        parameters=inp.get("parameters", {}),
         schedule=rule_item.get("ScheduleExpression"),
         event_pattern=rule_item.get("EventPattern"),
         image=abbreviate_image(inp.get("image", "")),
