@@ -946,17 +946,6 @@ def schedule(
         **kwargs,
     )
 
-    rule_arn = result["RuleArn"]
-
-    lambda_ = session.client("lambda")
-    lambda_.add_permission(
-        StatementId="EB-{}".format(rule_name),
-        Action="lambda:InvokeFunction",
-        FunctionName="RunNotebook",
-        Principal="events.amazonaws.com",
-        SourceArn=rule_arn,
-    )
-
     account = session.client("sts").get_caller_identity()["Account"]
     region = session.region_name
     target_arn = "arn:aws:lambda:{}:{}:function:{}".format(

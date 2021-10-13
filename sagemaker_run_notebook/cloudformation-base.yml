@@ -261,7 +261,15 @@ Resources:
                 Action: 
                   - sagemaker:CreateProcessingJob
                   - iam:PassRole
-                Resource: '*'  
+                Resource: '*'
+  InvokeNotebookLambdaFromEventBridge:
+    Type: AWS::Lambda::Permission
+    DependsOn: InvokeNotebookLambda
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: RunNotebook
+      Principal: events.amazonaws.com
+      SourceArn: {"Fn::Join": [":", ["arn:aws:events", {"Ref": "AWS::Region"}, {"Ref": "AWS::AccountId"}, "rule/RunNotebook-*"]]}
   InvokeNotebookLambda:
     Type: AWS::Lambda::Function
     Properties:
