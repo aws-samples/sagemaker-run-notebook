@@ -83,9 +83,9 @@ Resources:
             Action:
               - 'sts:AssumeRole'
   ExecuteNotebookClientPolicy:
-    Type: 'AWS::IAM::Policy'
+    Type: 'AWS::IAM::ManagedPolicy'
     Properties:
-      PolicyName: {"Fn::Join": ["-", ["ExecuteNotebookClient", {"Ref": "AWS::Region"}]]}
+      ManagedPolicyName: {"Fn::Join": ["-", ["ExecuteNotebookClient", {"Ref": "AWS::Region"}]]}
       Roles: 
         - !Ref ExecuteNotebookClientRole
       PolicyDocument:
@@ -151,9 +151,9 @@ Resources:
             Action:
               - 'sts:AssumeRole'
   ExecuteNotebookContainerPolicy:
-    Type: 'AWS::IAM::Policy'
+    Type: 'AWS::IAM::ManagedPolicy'
     Properties:
-      PolicyName: {"Fn::Join": ["-", ["ExecuteNotebookContainerPolicy", {"Ref": "AWS::Region"}]]}
+      ManagedPolicyName: {"Fn::Join": ["-", ["ExecuteNotebookContainerPolicy", {"Ref": "AWS::Region"}]]}
       Roles: 
         - !Ref BasicExecuteNotebookRole
       PolicyDocument:
