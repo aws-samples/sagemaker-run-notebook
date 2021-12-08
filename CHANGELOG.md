@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.19.0 (2021-12-07)
+
+This release has a number of small improvements and bug fixes.
+
+After upgrading to this release, we recommend that you delete and recreate your infrastructure with the following commands:
+
+1. `aws cloudformation delete-stack --stack-name sagemaker-run-notebook`
+2. `run-notebook create-infrastructure`
+
+This will pick up the new managed policies (see under [Bug Fixes])(#bug-fixes) below) which can not be updated with the `--update` option.
+
+### Bug fixes
+
+* Fixed an install failure on versions >= 3.10. (Fixes [issue #35](https://github.com/aws-samples/sagemaker-run-notebook/issues/35))
+* Use managed policies so that we can include the policies in other roles (See [Change policies to managed policies](https://github.com/aws-samples/sagemaker-run-notebook/pull/14) by @dmoser04).
+* Use a single permission statement on the Lambda function for all EventBridge rules. This prevents us overflowing the number of separate permissions when we have many scheduled notebook runs. This also means that we're not creating permissions at schedule time. (Fixes [issue #9](https://github.com/aws-samples/sagemaker-run-notebook/issues/9))
+* Correctly handle scheduled runs with no supplied parameters. (Fixes [issue #25](https://github.com/aws-samples/sagemaker-run-notebook/issues/25))
+* Update various JS dependencies for security fixes.
+
 ## v0.18.0 (2020-11-06)
 
 This is a documentation only release:
