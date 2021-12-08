@@ -10,7 +10,6 @@ from subprocess import CalledProcessError
 from setupbase import (
     command_for_func,
     create_cmdclass,
-    ensure_python,
     get_version,
     HERE,
     run,
@@ -20,9 +19,6 @@ import setuptools
 
 # The name of the project
 name = "sagemaker_run_notebook"
-
-# Ensure a valid python version
-ensure_python(">=3.5")
 
 # Get our version
 version = get_version(str(Path(HERE) / name / "server_extension" / "_version.py"))
