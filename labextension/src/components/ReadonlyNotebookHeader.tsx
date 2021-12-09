@@ -17,7 +17,7 @@ import { style } from 'typestyle';
 import classnames from 'classnames';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { Contents } from '@jupyterlab/services';
-import { DefaultIconReact } from '@jupyterlab/ui-components';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import { testId } from '../util/testId';
 import { getUniqueFilename } from '../util/files';
@@ -97,7 +97,7 @@ export const ReadonlyNotebookHeader: React.FC<ReadonlyNotebookHeaderProps> = ({ 
 
   return (
     <>
-      <DefaultIconReact name={ICON_INFO_CIRCLE} className={infoIconClass} />
+      <LabIcon.resolveReact icon={ICON_INFO_CIRCLE} className={infoIconClass} />
       <div className={messageClass}>
         <p className={messageTitleClass}>This is a read-only preview</p>
         <p className={messageBodyClass}>To run and edit the notebook, create a copy to your workspace.</p>

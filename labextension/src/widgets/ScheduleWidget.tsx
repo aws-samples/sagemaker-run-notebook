@@ -13,8 +13,8 @@
  */
 
 import { ReactWidget } from '@jupyterlab/apputils';
-import { IStateDB } from '@jupyterlab/coreutils';
-import { Widget } from '@phosphor/widgets';
+import { IStateDB } from '@jupyterlab/statedb';
+import { Widget } from '@lumino/widgets';
 import * as React from 'react';
 import { SchedulePanel } from '../components/SchedulePanel';
 import { RunsModel } from '../models/RunsModel';

@@ -87,7 +87,7 @@ setuptools.setup(
             "sphinx_rtd_theme",
             "autodocsumm",
             "sphinx-argparse",
-            "jupyterlab~=1.2",
+            "jupyterlab~=2.3",
         ]
     },
     entry_points={

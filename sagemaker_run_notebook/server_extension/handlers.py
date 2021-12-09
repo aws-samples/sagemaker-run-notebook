@@ -58,6 +58,10 @@ class BaseHandler(APIHandler):
         If it is in another format, write a 400 back to the client and return False, indicating that the
         handler method should return immediately. Otherwise, return True.
         """
+        # It seems like JupyterLab no longer calls the API with the correct content-type as of JupyterLab 2.
+        # For now, we just force this function to return True, but we should investigate why this is
+        return True
+
         if self.request.headers["Content-Type"] != "application/json":
             self.set_status(
                 400,
@@ -65,8 +69,14 @@ class BaseHandler(APIHandler):
                     self.request.headers["Content-Type"]
                 ),
             )
-            self.set_header("Content-Type", "text/plain")
-            self.finish("This server only accepts POST requests in 'application/json'")
+            self.finish(
+                json.dumps(
+                    {
+                        "message": "This server only accepts POST requests in 'application/json'",
+                        "reason": None,
+                    }
+                )
+            )
             return False
         else:
             return True

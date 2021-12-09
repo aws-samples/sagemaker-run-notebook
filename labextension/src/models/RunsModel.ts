@@ -13,10 +13,11 @@
  */
 
 import { ServerConnection } from '@jupyterlab/services';
-import { Poll, URLExt } from '@jupyterlab/coreutils';
+import { URLExt } from '@jupyterlab/coreutils';
 
-import { IDisposable } from '@phosphor/disposable';
-import { ISignal, Signal } from '@phosphor/signaling';
+import { IDisposable } from '@lumino/disposable';
+import { Poll } from '@lumino/polling';
+import { ISignal, Signal } from '@lumino/signaling';
 
 import { ListRunsResponse, Run, ErrorResponse } from '../server';
 

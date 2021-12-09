@@ -15,9 +15,8 @@
 import { ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin, ILabShell } from '@jupyterlab/application';
 
 import { ICommandPalette, MainAreaWidget, WidgetTracker } from '@jupyterlab/apputils';
-import { IStateDB } from '@jupyterlab/coreutils';
+import { IStateDB } from '@jupyterlab/statedb';
 
-import { IIconRegistry } from '@jupyterlab/ui-components';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 import { RunsWidget } from './widgets/RunsWidget';
@@ -32,7 +31,6 @@ function activate(
   shell: ILabShell,
   palette: ICommandPalette,
   restorer: ILayoutRestorer,
-  iconRegistry: IIconRegistry,
   rendermime: IRenderMimeRegistry,
   stateDB: IStateDB,
 ) {
@@ -43,7 +41,7 @@ function activate(
   const runsModel = new RunsModel();
   const rulesModel = new RulesModel();
 
-  registerSharingIcons(iconRegistry);
+  registerSharingIcons();
 
   const tracker = new WidgetTracker<MainAreaWidget<RunsWidget>>({
     namespace: 'sagemaker_run_notebooks',
@@ -155,7 +153,7 @@ function activate(
 const extension: JupyterFrontEndPlugin<void> = {
   id: 'sagemaker_run_notebook',
   autoStart: true,
-  requires: [ILabShell, ICommandPalette, ILayoutRestorer, IIconRegistry, IRenderMimeRegistry, IStateDB],
+  requires: [ILabShell, ICommandPalette, ILayoutRestorer, IRenderMimeRegistry, IStateDB],
   activate: activate,
 };
 

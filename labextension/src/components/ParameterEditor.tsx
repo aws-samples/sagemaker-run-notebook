@@ -22,8 +22,8 @@ import {
 } from '../style/ParameterEditor';
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { IObservableJSON } from '@jupyterlab/observables';
-import { JSONObject, JSONArray } from '@phosphor/coreutils';
-import { ISignal } from '@phosphor/signaling';
+import { JSONObject, JSONArray } from '@lumino/coreutils';
+import { ISignal } from '@lumino/signaling';
 import { SchedulePanel } from './SchedulePanel';
 
 const METADATA_KEY = 'sagemaker_run_notebook';

@@ -20,8 +20,10 @@ import { PathExt } from '@jupyterlab/coreutils';
  * there is a conflict, this returns an incremented filename like Test_1.ipynb or Test_2.ipynb.
  */
 export async function getUniqueFilename(app: JupyterFrontEnd, filename: string) {
-  const stem = PathExt.stem(filename);
-  const extension = PathExt.extname(filename);
+  const basename = PathExt.basename(filename);
+  const components = basename.split('.');
+  const extension = components.pop();
+  const stem = components.join('.');
 
   const fileExists = async (name: string) => {
     try {

@@ -12,12 +12,12 @@
  * language governing permissions and limitations under the License.
  */
 
-import { IIconRegistry } from '@jupyterlab/ui-components';
+import { LabIcon } from '@jupyterlab/ui-components';
 
 import infoCircleSvg from '../../style/icons/info_circle.svg';
 
 export const ICON_INFO_CIRCLE = 'sm-sharing-info-circle';
 
-export default function registerSharingIcons(iconRegistry: IIconRegistry) {
-  iconRegistry.addIcon({ name: ICON_INFO_CIRCLE, svg: infoCircleSvg });
+export default function registerSharingIcons(): void {
+  new LabIcon({ name: ICON_INFO_CIRCLE, svgstr: infoCircleSvg });
 }

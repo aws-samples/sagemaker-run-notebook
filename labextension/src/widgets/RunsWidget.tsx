@@ -22,7 +22,7 @@ import { RunsModel } from '../models/RunsModel';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { scrollableWidgetClass } from '../style/Widget';
-import { Message } from '@phosphor/messaging';
+import { Message } from '@lumino/messaging';
 
 export class RunsWidget extends ReactWidget {
   /**

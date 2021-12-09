@@ -19,7 +19,7 @@ import { ReactWidget } from '@jupyterlab/apputils';
 import { RulesList } from '../components/RuleList';
 import { RulesModel } from '../models/RulesModel';
 import { scrollableWidgetClass } from '../style/Widget';
-import { Message } from '@phosphor/messaging';
+import { Message } from '@lumino/messaging';
 
 export class RulesWidget extends ReactWidget {
   /**

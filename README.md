@@ -8,16 +8,17 @@ In addition to running notebooks, the library has tools to visualize runs and do
 
 ### Getting Started
 
-There are various ways to use the tools provided here, each with a slightly different set up.
+There are several ways to use the tools provided here, each with a slightly different set up.
 
-1. You can create the infrastructure you need with the provided CloudFormation template and then use standard AWS APIs to schedule, run, and monitor your notebooks. This is a good route when you don't want to add unsupported dependencies or you want to perform these actions from a language other than Python.
-2. You can perform operations from the shell using a command-line interface design explicitly for running notebooks (_e.g._, `$ run-notebook run weather.ipynb -p place="Seattle, WA"`).
-3. You can perform operations from a Jupyter notebook or Python program using a special Python library (_e.g._, `run.invoke(notebook="weather.ipynb", parameters={"place": "Seattle, WA"})`)
-4. You can use the JupyterLab extension to run, schedule, and monitor notebooks interactively in any JupyterLab environment (inluding SageMaker Studio and SageMaker notebook instances)
+We provide a convenience library to configure your infrastructure, build executable environments, and execute notebooks. With this library, you have three ways to run, schedule, and monitor notebook execution:
 
-For options 2-4, you'll install the Python convenience package that's part of the repository.
+1. You can perform operations from the shell using a command-line interface designed explicitly for running notebooks (_e.g._, `$ run-notebook run weather.ipynb -p place="Seattle, WA"`).
+2. You can perform operations from a Jupyter notebook or Python program using a special Python library (_e.g._, `run.invoke(notebook="weather.ipynb", parameters={"place": "Seattle, WA"})`)
+3. You can use the JupyterLab extension to run, schedule, and monitor notebooks interactively in any JupyterLab environment (inluding SageMaker Studio and SageMaker notebook instances)
 
-To install and configure the tools, see the [Quick Start](QuickStart.md).
+To install and configure these tools, see the [Quick Start](QuickStart.md).
+
+Alternatively, you can create the infrastructure you need with the provided CloudFormation template and then use standard AWS APIs to schedule, run, and monitor your notebooks. This is a good route when you don't want to add unsupported dependencies or you want to perform these actions from a language other than Python. For instructions on this path, see [Build Your Own Notebook Execution Environment](DIY.md).
 
 ## Security
 

@@ -17,10 +17,11 @@ import * as React from 'react';
 import { RunsModel } from '../models/RunsModel';
 import { NotebookPanel } from '@jupyterlab/notebook';
 import { ServerConnection } from '@jupyterlab/services';
-import { IStateDB, URLExt } from '@jupyterlab/coreutils';
-import { JSONValue, ReadonlyJSONObject, JSONArray } from '@phosphor/coreutils';
-import { Signal } from '@phosphor/signaling';
-import { Widget } from '@phosphor/widgets';
+import { URLExt } from '@jupyterlab/coreutils';
+import { IStateDB } from '@jupyterlab/statedb';
+import { JSONValue, ReadonlyJSONObject, JSONArray } from '@lumino/coreutils';
+import { Signal } from '@lumino/signaling';
+import { Widget } from '@lumino/widgets';
 
 import {
   UploadNotebookResponse,
@@ -120,7 +121,7 @@ export class SchedulePanel extends React.Component<ISchedulePanelProps, ISchedul
 
   private setCurrentWidget(newWidget: Widget): void {
     const context = newWidget && (newWidget as NotebookPanel).context;
-    const session = context && context.session;
+    const session = context && context.sessionContext && context.sessionContext.session;
     const isNotebook = session && session.type === 'notebook';
     if (isNotebook) {
       this.currentNotebookPanel = newWidget as NotebookPanel;
