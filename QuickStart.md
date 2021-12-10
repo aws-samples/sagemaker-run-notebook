@@ -41,7 +41,7 @@ Contents:
       - [On a laptop or other system](#on-a-laptop-or-other-system)
   - [Using the JupyterLab extension](#using-the-jupyterlab-extension)
 
-The files we reference here can be downloaded from the [latest GitHub release][release]. 
+The files we reference here can be downloaded from the [latest GitHub release][release].
 
 > __Note:__ The JupyterLab extension in the current release works only with JupyterLab version 2.x. If you wish
 > to use the extension with JupyterLab version 1.x, use the latest [latest release compatible with JupyterLab 1.x][release-1.x].
@@ -51,7 +51,7 @@ If you want to schedule notebooks without using the library, there are resources
 release to help you do that. See the [DIY instructions][DIY] on GitHub for details.
 
 [release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
-[release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.20.0
+[release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.19.0
 [DIY]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md
 
 ## Setting up your environment
