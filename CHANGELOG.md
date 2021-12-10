@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20.0 (2021-12-09)
+
+This release provides support for JupyterLab 2.x.
+
+As of this release, the JupyterLab extension is *no longer compatible with JupyterLab 1.x*. If you're using JupyterLab 1.x, please use [release v0.19.0](#v0190-2021-12-07).
+
 ## v0.19.0 (2021-12-07)
 
 This release has a number of small improvements and bug fixes.

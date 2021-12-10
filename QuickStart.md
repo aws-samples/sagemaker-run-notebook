@@ -51,7 +51,7 @@ If you want to schedule notebooks without using the library, there are resources
 release to help you do that. See the [DIY instructions][DIY] on GitHub for details.
 
 [release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
-[release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.19.0
+[release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.20.0
 [DIY]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md
 
 ## Setting up your environment
@@ -63,7 +63,7 @@ To follow this recipe, you'll need to have AWS credentials set up that give you 
 You can install the library directly from the GitHub release using pip:
 
 ```sh
-$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.19.0/sagemaker_run_notebook-0.19.0.tar.gz
+$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.20.0/sagemaker_run_notebook-0.20.0.tar.gz
 ```
 
 This installs the sagemaker-run-notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in [Activating the JupyterLab Extension](#activating-the-jupyterlab-extension) for more information.
