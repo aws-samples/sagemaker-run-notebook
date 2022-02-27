@@ -45,7 +45,7 @@
     "react": "~16.9.0",
     "react-router-dom": "^5.1.2",
     "sanitize-html": "2.3.2",
-    "url-parse": "1.5.3"
+    "url-parse": "1.5.8"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
@@ -69,7 +69,7 @@
     "codemirror": "5.63",
     "sanitize-html": "2.3.2",
     "strip-ansi": "6.0.1",
-    "url-parse": "1.5.3"
+    "url-parse": "1.5.8"
   },
   "sideEffects": [
     "style/*.css"
