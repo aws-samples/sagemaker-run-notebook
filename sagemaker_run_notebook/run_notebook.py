@@ -260,6 +260,8 @@ def download_notebook(job_name, output=".", session=None):
     prefix = desc["ProcessingOutputConfig"]["Outputs"][0]["S3Output"]["S3Uri"]
     notebook = os.path.basename(desc["Environment"]["PAPERMILL_OUTPUT"])
     s3path = "{}/{}".format(prefix, notebook)
+    
+    print(prefix, notebook)
 
     if not os.path.exists(output):
         try:
@@ -268,8 +270,10 @@ def download_notebook(job_name, output=".", session=None):
             if e.errno != errno.EEXIST:
                 raise
 
-    p1 = Popen(split("aws s3 cp --no-progress {} {}/".format(s3path, output)))
+    p1 = Popen(split("aws s3 cp {} {}/".format(s3path, output)))
     p1.wait()
+
+    print(s3path, output)
     return "{}/{}".format(output.rstrip("/"), notebook)
 
 

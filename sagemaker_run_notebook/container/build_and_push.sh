@@ -2,9 +2,18 @@
 
 # The argument to this script is the image name. This will be used as the image on the local
 # machine and combined with the account and region to form the repository name for ECR.
+set -a
+set -euo pipefail
 
 prog=$0
 default_image="python:3.7-slim-buster"
+
+DATE=$(date +%Y%m%d%H%M%S)
+
+ECR_REPOSITORY_URI="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+IMAGE_URI="${ECR_REPOSITORY_URI}/${IMAGE_NAME}"
+echo $ECR_REPOSITORY_URI
+echo $IMAGE_URI
 
 function usage {
     echo "Usage: $1 [--base <base-image>] <image>"
@@ -36,6 +45,8 @@ fi
 echo "Source image ${base}"
 echo "Final image ${image}"
 
+TAG=${2:-$DATE}
+
 # Get the account number associated with the current IAM credentials
 account=$(aws sts get-caller-identity --query Account --output text)
 
@@ -49,9 +60,6 @@ fi
 region=$(aws configure get region)
 region=${region:-us-west-2}
 echo "Region ${region}"
-
-
-fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
 
 # If the repository doesn't exist in ECR, create it.
 
@@ -79,8 +87,13 @@ fi
 # Build the docker image locally with the image name and then push it to ECR
 # with the full name.
 
-docker build -t ${image} --build-arg BASE_IMAGE=${base} .
+docker build -f Dockerfile -t ${image} --build-arg BASE_IMAGE=${base} .
 
-docker tag ${image} ${fullname}
+echo "Tagging IMAGE_NAME ${IMAGE_URI}:${TAG}"
+echo "Tagging IMAGE_NAME ${IMAGE_URI}:latest"
+docker tag ${IMAGE_NAME} "${IMAGE_URI}:${TAG}"
+docker tag ${IMAGE_NAME} "${IMAGE_URI}:latest"
 
-docker push ${fullname}
+echo "Pushing IMAGE_NAME to ECR ${IMAGE_URI}"
+docker push "${IMAGE_URI}:${TAG}"
+docker push "${IMAGE_URI}:latest"

@@ -8,14 +8,15 @@ ENV PYTHONUNBUFFERED TRUE
 # images like nvidia/cuda. Note that this incantation only works on Debian bases
 RUN if which python; then echo Python already installed; else \
     echo Installing Python; \
-    apt update && \
+    apt update\
     apt install -y python3 python3-pip && \
     update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
     update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1 && \
-    pip install --upgrade pip && \
+    pip3 install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*; fi
+RUN sudo apt-get install gcc python3-dev 
 COPY requirements.txt /tmp/requirements.txt
-RUN pip install papermill jupyter nteract-scrapbook boto3 requests && pip install -r /tmp/requirements.txt
+RUN pip3 install papermill jupyter nteract-scrapbook boto3 requests && pip install -r /tmp/requirements.txt
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PATH="/opt/program:${PATH}"
