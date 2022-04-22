@@ -732,7 +732,7 @@ class InvokeException(Exception):
 
 
 def invoke(
-    notebook,
+    notebook=None,
     image="notebook-runner",
     input_path=None,
     output_prefix=None,
@@ -805,11 +805,14 @@ def invoke(
     for f in extra_fns:
         extra_args = f(extra_args)
 
+    if notebook:
+        notebook = os.path.basename(notebook)
+
     args = {
         "image": image,
         "input_path": input_path,
         "output_prefix": output_prefix,
-        "notebook": os.path.basename(notebook),
+        "notebook": notebook,
         "parameters": parameters,
         "role": role,
         "instance_type": instance_type,
@@ -836,8 +839,9 @@ RULE_PREFIX = "RunNotebook-"
 
 
 def schedule(
-    notebook,
+    
     rule_name,
+    notebook=None,
     schedule=None,
     event_pattern=None,
     image="notebook-runner",
@@ -929,12 +933,15 @@ def schedule(
     extra_args = {}
     for f in extra_fns:
         extra_args = f(extra_args)
+    
+    if notebook:
+        notebook = os.path.basename(notebook)
 
     args = {
         "image": image,
         "input_path": input_path,
         "output_prefix": output_prefix,
-        "notebook": os.path.basename(notebook),
+        "notebook": notebook,
         "parameters": parameters,
         "role": role,
         "instance_type": instance_type,
