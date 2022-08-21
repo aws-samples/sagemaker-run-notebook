@@ -129,7 +129,13 @@ def _domain_for_region(region):
     Returns:
         str: the DNS suffix
     """
-    return "c2s.ic.gov" if region == "us-iso-east-1" else "amazonaws.com"
+    if region.startswith("us-iso-"):
+        return "c2s.ic.gov"
+    if region.startswith("us-isob-"):
+        return "sc2s.sgov.gov"
+    if region.startswith("cn-"):
+        return "amazonaws.com.cn"    
+    return  "amazonaws.com"
 
 
 def get_execution_role(session):
