@@ -27,10 +27,10 @@ import zipfile as zip
 import botocore
 import boto3
 
-from .utils import default_bucket, get_execution_role
+from .utils import default_bucket, domain_for_region, get_execution_role
 
 abbrev_image_pat = re.compile(
-    r"(?P<account>\d+).dkr.ecr.(?P<region>[^.]+).amazonaws.com/(?P<image>[^:/]+)(?P<tag>:[^:]+)?"
+    r"(?P<account>\d+).dkr.ecr.(?P<region>[^.]+).(amazonaws.com|amazonaws.com.cn)/(?P<image>[^:/]+)(?P<tag>:[^:]+)?"
 )
 
 
@@ -46,7 +46,8 @@ def abbreviate_image(image):
         return image
 
 
-abbrev_role_pat = re.compile(r"arn:aws:iam::(?P<account>\d+):role/(?P<name>[^/]+)")
+abbrev_role_pat = re.compile(
+    r"arn:aws([^:]*):iam::(?P<account>\d+):role/(?P<name>[^/]+)")
 
 
 def abbreviate_role(role):
@@ -124,13 +125,17 @@ def execute_notebook(
     if not role:
         role = get_execution_role(session)
     elif "/" not in role:
-        account = session.client("sts").get_caller_identity()["Account"]
-        role = "arn:aws:iam::{}:role/{}".format(account, role)
+        identity = session.client("sts").get_caller_identity()
+        account = identity["Account"]
+        partition = identity["Arn"].split(':')[1]
+        role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if "/" not in image:
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
-        image = "{}.dkr.ecr.{}.amazonaws.com/{}:latest".format(account, region, image)
+        domain = domain_for_region(region)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
+            account, region, domain, image)
 
     if notebook == None:
         notebook = input_path
@@ -140,7 +145,8 @@ def execute_notebook(
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.gmtime())
 
     job_name = (
-        ("papermill-" + re.sub(r"[^-a-zA-Z0-9]", "-", nb_name))[: 62 - len(timestamp)]
+        ("papermill-" + re.sub(r"[^-a-zA-Z0-9]",
+         "-", nb_name))[: 62 - len(timestamp)]
         + "-"
         + timestamp
     )
@@ -628,8 +634,10 @@ def create_lambda(role=None, session=None):
         # time.sleep(30) # wait for eventual consistency, we hope
 
     if "/" not in role:
-        account = session.client("sts").get_caller_identity()["Account"]
-        role = "arn:aws:iam::{}:role/{}".format(account, role)
+        identity = session.client("sts").get_caller_identity()
+        account = identity["Account"]
+        partition = identity["Arn"].split(':')[1]
+        role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     code_bytes = zip_bytes(code_file)
 
@@ -780,7 +788,9 @@ def invoke(
     if "/" not in image:
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
-        image = "{}.dkr.ecr.{}.amazonaws.com/{}:latest".format(account, region, image)
+        domain =  domain_for_region(region)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
+            account, region, domain, image)
 
     if not role:
         try:
@@ -789,8 +799,10 @@ def invoke(
             role = "BasicExecuteNotebookRole-{}".format(session.region_name)
 
     if "/" not in role:
-        account = session.client("sts").get_caller_identity()["Account"]
-        role = "arn:aws:iam::{}:role/{}".format(account, role)
+        identity = session.client("sts").get_caller_identity()
+        account = identity["Account"]
+        partition = identity["Arn"].split(':')[1]
+        role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if input_path is None:
         input_path = upload_notebook(notebook)
@@ -849,7 +861,7 @@ def schedule(
 
     Creates a CloudWatch Event rule to invoke the installed Lambda either on the provided schedule or in response
     to the provided event. \
-  
+
     :meth:`schedule` can upload a local notebook file to run or use one previously uploaded to S3. 
     To find jobs run by the schedule, see :meth:`list_runs` using the `rule` argument to filter to 
     a specific rule. To download the results, see :meth:`download_notebook` (or :meth:`download_all` 
@@ -905,7 +917,9 @@ def schedule(
     if "/" not in image:
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
-        image = "{}.dkr.ecr.{}.amazonaws.com/{}:latest".format(account, region, image)
+        domain = domain_for_region(region)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
+            account, region, domain, image)
 
     if not role:
         try:
@@ -914,8 +928,10 @@ def schedule(
             role = "BasicExecuteNotebookRole-{}".format(session.region_name)
 
     if "/" not in role:
-        account = session.client("sts").get_caller_identity()["Account"]
-        role = "arn:aws:iam::{}:role/{}".format(account, role)
+        identity = session.client("sts").get_caller_identity()
+        account = identity["Account"]
+        partition = identity["Arn"].split(':')[1]
+        role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if input_path is None:
         input_path = upload_notebook(notebook)
@@ -945,11 +961,12 @@ def schedule(
         Description='Rule to run the Jupyter notebook "{}"'.format(notebook),
         **kwargs,
     )
-
-    account = session.client("sts").get_caller_identity()["Account"]
+    identity = session.client("sts").get_caller_identity()
+    account = identity["Account"]
+    partition = identity["Arn"].split(':')[1]
     region = session.region_name
-    target_arn = "arn:aws:lambda:{}:{}:function:{}".format(
-        region, account, lambda_function_name
+    target_arn = "arn:{}:lambda:{}:{}:function:{}".format(
+        partition, region, account, lambda_function_name
     )
 
     result = events.put_targets(
@@ -1082,7 +1099,7 @@ def base_image(s):
         return s
 
 
-role_pat = re.compile(r"arn:aws:iam::([0-9]+):role/(.*)$")
+role_pat = re.compile(r"arn:aws([^:]*):iam::([0-9]+):role/(.*)$")
 
 
 def base_role(s):

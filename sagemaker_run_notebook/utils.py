@@ -116,11 +116,11 @@ def sts_regional_endpoint(region):
     Returns:
         str: AWS STS regional endpoint
     """
-    domain = _domain_for_region(region)
+    domain = domain_for_region(region)
     return "https://sts.{}.{}".format(region, domain)
 
 
-def _domain_for_region(region):
+def domain_for_region(region):
     """Get the DNS suffix for the given region.
 
     Args:
@@ -129,7 +129,13 @@ def _domain_for_region(region):
     Returns:
         str: the DNS suffix
     """
-    return "c2s.ic.gov" if region == "us-iso-east-1" else "amazonaws.com"
+    if region.startswith("us-iso-"):
+        return "c2s.ic.gov"
+    if region.startswith("us-isob-"):
+        return "sc2s.sgov.gov"
+    if region.startswith("cn-"):
+        return "amazonaws.com.cn"
+    return "amazonaws.com"
 
 
 def get_execution_role(session):
