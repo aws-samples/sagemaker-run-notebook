@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.21.0 (2022-10-04)
+
+This release is just security patches in the dependencies.
+
 ## v0.20.0 (2021-12-09)
 
 This release provides support for JupyterLab 2.x.
@@ -76,7 +80,7 @@ Two small changes:
 
 * Run notebooks written in R or other languages. See the newly added [R example][example] for information.
 * When using the CLI or Library, you can supply extra arguments to the SageMaker Processing Job used to execute the notebook. For example to allow your notebook to run for up to a full day, invoke your notebook with `run-notebook run foo.ipynb --extra '{"StoppingCondition":{"MaxRuntimeInSeconds":86400}}'`. Using this mechanism, you can add extra inputs and outputs, connect to a VPC, add environment variables, expand disk space, add the run to a specific experiment, etc. See the [documentation for SageMaker Processing Jobs][processing-jobs] for more.
-  
+
 [example]: https://github.com/aws-samples/sagemaker-run-notebook/tree/master/examples/R
 [processing-jobs]: https://docs.aws.amazon.com/cli/latest/reference/sagemaker/create-processing-job.html
 
