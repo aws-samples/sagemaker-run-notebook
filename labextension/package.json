@@ -25,9 +25,13 @@
     "url": "https://github.com/awslabs/sagemaker_run_notebook.git"
   },
   "scripts": {
-    "build": "jlpm install && tsc",
-    "build:labextension": "jlpm build && jlpm clean:labextension && mkdirp sagemaker_run_notebook/labextension && cd sagemaker_run_notebook/labextension && npm pack ../..",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm run build:labextension",
+    "build:lib": "tsc",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "clean": "rimraf lib tsconfig.tsbuildinfo sagemaker_run_notebook/labextension",
+    "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
     "clean:labextension": "rimraf sagemaker_run_notebook/labextension",
     "clean:slate": "jlpm clean:more && jlpm clean:labextension && rimraf node_modules",
     "eslint": "eslint . --fix --ext .ts,.tsx",
@@ -35,22 +39,19 @@
     "watch": "tsc -w"
   },
   "dependencies": {
-    "@jupyterlab/application": "^2.0.0",
-    "@jupyterlab/apputils": "^2.0.0",
-    "@jupyterlab/notebook": "^2.0.0",
+    "@jupyterlab/application": "^3.0.0",
+    "@jupyterlab/apputils": "^3.0.0",
+    "@jupyterlab/notebook": "^3.0.0",
     "@lumino/coreutils": "^1.3.1",
     "@lumino/messaging": "^1.3.1",
     "classnames": "^2.2.6",
     "codemirror": "5.63",
-    "react": "~16.9.0",
-    "react-router-dom": "^5.1.2",
-    "sanitize-html": "2.3.2",
-    "url-parse": "1.5.9",
-    "marked": "^4.0.17"
+    "url-parse": "1.5.9"
   },
   "devDependencies": {
+    "@jupyterlab/builder": "^3.0.0",
     "@types/classnames": "^2.2.9",
-    "@types/codemirror": "^0.0.74",
+    "@types/codemirror": "^0.0.97",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
     "eslint": "^7",
@@ -68,7 +69,6 @@
   },
   "resolutions": {
     "codemirror": "5.63",
-    "sanitize-html": "2.3.2",
     "strip-ansi": "6.0.1",
     "url-parse": "1.5.9",
     "marked": "^4.0.17"    
@@ -77,6 +77,17 @@
     "style/*.css"
   ],
   "jupyterlab": {
-    "extension": true
+    "discovery": {
+      "server": {
+        "managers": [
+          "pip"
+        ],
+        "base": {
+          "name": "sagemaker_run_notebook"
+        }
+      }
+    },
+    "extension": true,
+    "outputDir": "sagemaker_run_notebook/labextension"
   }
 }

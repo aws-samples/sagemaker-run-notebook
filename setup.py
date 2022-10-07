@@ -23,10 +23,11 @@ name = "sagemaker_run_notebook"
 # Get our version
 version = get_version(str(Path(HERE) / name / "server_extension" / "_version.py"))
 
-lab_path = Path(HERE) / "labextension"
+lab_path = Path(HERE) / "labextension" 
 
 data_files_spec = [
-    ("share/jupyter/lab/extensions", str(lab_path / name / "labextension"), "*.tgz"),
+    ("share/jupyter/labextensions/%s/static" % name, str(lab_path / name / "labextension" / "static"), "**"),
+    ("share/jupyter/labextensions/%s" % name, str(lab_path / name / "labextension"), "package.json"),
     (
         "etc/jupyter/jupyter_notebook_config.d",
         "sagemaker_run_notebook/server_extension/jupyter-config/jupyter_notebook_config.d",
@@ -87,7 +88,8 @@ setuptools.setup(
             "sphinx_rtd_theme",
             "autodocsumm",
             "sphinx-argparse",
-            "jupyterlab~=2.3",
+            "build",
+            "jupyterlab~=3.0",
         ]
     },
     entry_points={

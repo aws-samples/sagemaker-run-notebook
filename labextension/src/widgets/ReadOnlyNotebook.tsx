@@ -75,7 +75,7 @@ export function openReadonlyNotebook(
 
   // Model must be populated after the widget is added.
   const nbModel = new NotebookModel();
-  nbModel.mimeType = 'text/x-python';
+  (contentWidget as any)._mimetype = 'text/x-python'; // eslint-disable-line
   contentWidget.model = nbModel;
 
   nbModel.fromJSON(nbContent);
