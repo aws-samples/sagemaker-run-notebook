@@ -83,7 +83,7 @@ def _create_s3_bucket_if_it_does_not_exist(bucket_name, region, session):
                     CreateBucketConfiguration={"LocationConstraint": region},
                 )
 
-            print("Created S3 bucket: %s", bucket_name)
+            print(f"Created S3 bucket: {bucket_name}")
         except botocore.exceptions.ClientError as e:
             error_code = e.response["Error"]["Code"]
             message = e.response["Error"]["Message"]
