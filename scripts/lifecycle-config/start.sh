@@ -18,10 +18,6 @@ set -e
 # OVERVIEW
 # This script installs the sagemaker_run_notebook extension package in SageMaker Notebook Instance
 #
-# There are two parameters you need to set:
-# 1. S3_LOCATION is the place in S3 where you put the extension tarball
-# 2. TARBALL is the name of the tar file that you uploaded to S3. You should just need to check
-#    that you have the version right.
 
 sudo -u ec2-user -i <<'EOF'
 
@@ -38,9 +34,8 @@ source /home/ec2-user/anaconda3/bin/activate JupyterSystemEnv
 
 # Install the extension and rebuild JupyterLab so it picks up the new UI
 pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v${VERSION}/sagemaker_run_notebook-${VERSION}.tar.gz
-jupyter lab build
 
-source /home/ec2-user/anaconda3/bin/deactivate
+conda deactivate
 EOF
 
 # Tell Jupyter to use the user-settings and workspaces directory on the EBS
@@ -50,4 +45,12 @@ echo "export JUPYTERLAB_WORKSPACES_DIR=/home/ec2-user/SageMaker/.jupyter-user/wo
 
 # The Jupyter server needs to be restarted to pick up the server part of the
 # extension. This needs to be done as root.
-initctl restart jupyter-server --no-wait
+
+notebook_pid=$(ps -eflww | awk '$16 ~ /jupyter-nbclassic$/ {print $4}')
+if [ "${notebook_pid}" != "" ]
+then
+    echo "restarting Jupyter server"
+    kill ${notebook_pid}
+else
+    echo "Jupyter server not running, no need to restart"
+fi
