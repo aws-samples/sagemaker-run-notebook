@@ -38,6 +38,7 @@ def create_project(repo_name, role, zipfile, base_image=default_base):
     sts = session.client("sts")
     identity = sts.get_caller_identity()
     account = identity["Account"]
+    partition = identity["Arn"].split(':')[1]
     args = {
         "name": f"create-sagemaker-container-{repo_name}",
         "description": f"Build the container {repo_name} for running notebooks in SageMaker",
@@ -56,7 +57,7 @@ def create_project(repo_name, role, zipfile, base_image=default_base):
             ],
             "privilegedMode": True,
         },
-        "serviceRole": f"arn:aws:iam::{account}:role/{role}",
+        "serviceRole": f"arn:{partition}:iam::{account}:role/{role}",
     }
 
     response = client.create_project(**args)

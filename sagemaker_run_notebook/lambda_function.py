@@ -20,19 +20,21 @@ def execute_notebook(
 ):
     session = ensure_session()
     region = session.region_name
-
-    account = session.client("sts").get_caller_identity()["Account"]
+    caller_id=session.client("sts").get_caller_identity()
+    partition = caller_id["Arn"].split(':')[1]
+    account = caller_id["Account"]
+    domain = domain_for_region(region)
     if not image:
         image = "notebook-runner"
     if "/" not in image:
-        image = f"{account}.dkr.ecr.{region}.amazonaws.com/{image}"
+        image = f"{account}.dkr.ecr.{region}.{domain}/{image}"
     if ":" not in image:
         image = image + ":latest"
 
     if not role:
         role = f"BasicExecuteNotebookRole-{region}"
     if "/" not in role:
-        role = f"arn:aws:iam::{account}:role/{role}"
+        role = f"arn:{partition}:iam::{account}:role/{role}"
 
     if output_prefix is None:
         output_prefix = os.path.dirname(input_path)
@@ -148,6 +150,21 @@ def ensure_session(session=None):
     if session is None:
         session = boto3.session.Session()
     return session
+
+def domain_for_region(region):
+    """Get the DNS suffix for the given region.
+    Args:
+        region (str): AWS region name
+    Returns:
+        str: the DNS suffix
+    """
+    if region.startswith("us-iso-"):
+        return "c2s.ic.gov"
+    if region.startswith("us-isob-"):
+        return "sc2s.sgov.gov"
+    if region.startswith("cn-"):
+        return "amazonaws.com.cn"    
+    return  "amazonaws.com"
 
 
 def lambda_handler(event, context):
