@@ -38,10 +38,7 @@ data_files_spec = [
 
 def runPackLabextension():
     if (lab_path / "package.json").is_file():
-        try:
-            run(["jlpm", "build:labextension"], cwd=str(lab_path))
-        except CalledProcessError:
-            pass
+        run(["jlpm", "build:labextension"], cwd=str(lab_path))
 
 
 pack_labext = command_for_func(runPackLabextension)
