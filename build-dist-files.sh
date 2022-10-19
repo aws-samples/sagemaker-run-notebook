@@ -18,8 +18,8 @@ rm -rf manual_dist
 mkdir -p manual_dist
 
 cp build/dist/sagemaker_run_notebook-${VERSION}.tar.gz manual_dist/
-cp scripts/lifecycle-config/notebook-instances/start.sh manual_dist/
-cp scripts/lifecycle-config/studio/install-run-notebook.sh manual_dist/
+cp scripts/lifecycle-configuration/notebook-instances/start.sh manual_dist/
+cp scripts/lifecycle-configuration/studio/install-run-notebook.sh manual_dist/
 gtar czf manual_dist/container.tar.gz container
 cp sagemaker_run_notebook/cloudformation.yml manual_dist/
 (cd docs/build/html; gtar czf ../../../manual_dist/docs.tar.gz --transform 's,^\./,sagemaker-run-notebook-docs/,' .)
