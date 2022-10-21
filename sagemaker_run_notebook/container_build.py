@@ -27,7 +27,7 @@ from botocore.exceptions import ClientError
 
 import sagemaker_run_notebook.utils as utils
 
-default_base = "python:3.7-slim-buster"
+default_base = "python:3.10-slim-bullseye"
 
 
 def create_project(repo_name, role, zipfile, base_image=default_base):

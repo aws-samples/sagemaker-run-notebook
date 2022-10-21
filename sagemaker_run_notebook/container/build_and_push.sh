@@ -4,7 +4,7 @@
 # machine and combined with the account and region to form the repository name for ECR.
 
 prog=$0
-default_image="python:3.7-slim-buster"
+default_image="python:3.10-slim-bullseye"
 
 function usage {
     echo "Usage: $1 [--base <base-image>] <image>"
