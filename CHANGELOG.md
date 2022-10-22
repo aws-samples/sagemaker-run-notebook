@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.22.0 (2022-10-21)
+
+The GUI plugin is now updated to support JupyterLab 3.x and, therefore, supports the current versions of SageMaker Notebook Instances and SageMaker Studio notebooks.
+
+As of this release, the JupyterLab extension is *no longer compatible with JupyterLab 2.x*. If you're using JupyterLab 2.x, please use [release v0.21.0](#v0210-2022-10-04).
+
+Additional small features:
+
+* Add a real life cycle script for SageMaker Studio notebooks so you can install the plugin permanently in your domain.
+* Support for China regions (thanks to @yosefbs).
+* Update default container environment to Python 3.10.
+
 ## v0.21.0 (2022-10-04)
 
 This release is just security patches in the dependencies.

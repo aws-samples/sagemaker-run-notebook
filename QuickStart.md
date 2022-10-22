@@ -49,7 +49,7 @@ an older version of JupyterLab and want to use GUI interface, use one of the fol
 | JupyterLab Version | Extension Release       |
 | ------------------ | ----------------------- |
 |       3.x          | [latest][release]       |
-|       2.x          | [v0.21.0][release-2.x]  |
+|       2.x          | [v0.22.0][release-2.x]  |
 |       1.x          | [v0.19.0][release-1.x]  |
 
 If you want to schedule notebooks without using the library, there are resources included in the
@@ -57,7 +57,7 @@ release to help you do that. See the [DIY instructions][DIY] on GitHub for detai
 
 [release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
 [release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.19.0
-[release-2.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.21.0
+[release-2.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.22.0
 [DIY]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md
 
 ## Setting up your environment
@@ -69,7 +69,7 @@ To follow this recipe, you'll need to have AWS credentials set up that give you 
 You can install the library directly from the GitHub release using pip:
 
 ```sh
-$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.21.0/sagemaker_run_notebook-0.21.0.tar.gz
+$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.22.0/sagemaker_run_notebook-0.22.0.tar.gz
 ```
 
 This installs the sagemaker-run-notebook library, CLI tool and the JupyterLab 3.x plug-in. After installation, you will need to restart any currently running JupyterLab servers to activate the plug-in.
