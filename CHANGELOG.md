@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.23.0 (2022-11-10)
+
+Fixes a bug in v0.22.0 where it didn't update the lifecycle scripts for SageMaker Studio and SageMaker Notebook Instances correctly.
+
 ## v0.22.0 (2022-10-21)
 
 The GUI plugin is now updated to support JupyterLab 3.x and, therefore, supports the current versions of SageMaker Notebook Instances and SageMaker Studio notebooks.
