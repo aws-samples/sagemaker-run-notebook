@@ -84,7 +84,7 @@ fi
 # Edit the various files that need to be edited with the version number
 
 vmatch=$(sed <<< "${tag}" "s/\\./\\\\./g" | sed 's/^v//')
-for file in QuickStart.md build-dist-files.sh docs/source/conf.py scripts/lifecycle-config/notebook-instances/start.sh scripts/lifecycle-config/studio/install-run-notebook.sh
+for file in QuickStart.md build-dist-files.sh docs/source/conf.py scripts/lifecycle-configuration/notebook-instances/start.sh scripts/lifecycle-configuration/studio/install-run-notebook.sh
 do
   sed -e "s/${vmatch}/${new_version}/g" -i "" ${file}
 done
