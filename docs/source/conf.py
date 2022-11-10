@@ -48,7 +48,7 @@ extensions = [
 source_suffix = ".rst"  # The suffix of source filenames.
 master_doc = "index"  # The master toctree document.
 
-copyright = u"%s, Amazon" % datetime.now().year
+copyright = "%s, Amazon" % datetime.now().year
 
 pygments_style = "default"
 

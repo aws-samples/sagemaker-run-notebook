@@ -23,11 +23,19 @@ name = "sagemaker_run_notebook"
 # Get our version
 version = get_version(str(Path(HERE) / name / "server_extension" / "_version.py"))
 
-lab_path = Path(HERE) / "labextension" 
+lab_path = Path(HERE) / "labextension"
 
 data_files_spec = [
-    ("share/jupyter/labextensions/%s/static" % name, str(lab_path / name / "labextension" / "static"), "**"),
-    ("share/jupyter/labextensions/%s" % name, str(lab_path / name / "labextension"), "package.json"),
+    (
+        "share/jupyter/labextensions/%s/static" % name,
+        str(lab_path / name / "labextension" / "static"),
+        "**",
+    ),
+    (
+        "share/jupyter/labextensions/%s" % name,
+        str(lab_path / name / "labextension"),
+        "package.json",
+    ),
     (
         "etc/jupyter/jupyter_notebook_config.d",
         "sagemaker_run_notebook/server_extension/jupyter-config/jupyter_notebook_config.d",
