@@ -67,7 +67,7 @@ setuptools.setup(
     description="Schedule notebooks to run using SageMaker processing jobs",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/awslabs/sagemaker-run-notebook",
+    url="https://github.com/aws-samples/sagemaker-run-notebook",
     cmdclass=cmdclass,
     packages=["sagemaker_run_notebook", "sagemaker_run_notebook.server_extension"],
     license="Apache License 2.0",
