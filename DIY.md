@@ -157,3 +157,8 @@ Note that times are always in UTC. To see the full rules on times, view the Clou
 [sched]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
 
 When the notebook has run, you can find the jobs with `aws sagemaker list-processing-jobs` and then describe the job and download the notebook as described above.
+
+Few Common conatiners apart from default python -
+
+1. Conda container - run-notebook create-container --base public.ecr.aws/y0o4y9o3/anaconda-pkg-build:latest repository_name
+2. Tensorflow conatiner - run-notebook create-container --base 763104351884.dkr.ecr.us-east-1.amazonaws.com/tensorflow-training:2.9.1-gpu-py39-cu112-ubuntu20.04-e3 notebook-runner-tensorflow
