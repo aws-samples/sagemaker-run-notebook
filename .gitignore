@@ -1,4 +1,6 @@
 __pycache__
+build/**
+labextension/sagemaker_run_notebook/**
 output/**
 dist/**
 .ipynb_checkpoints

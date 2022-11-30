@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.23.0 (2022-11-10)
+
+Fixes a bug in v0.22.0 where it didn't update the lifecycle scripts for SageMaker Studio and SageMaker Notebook Instances correctly.
+
+## v0.22.0 (2022-10-21)
+
+The GUI plugin is now updated to support JupyterLab 3.x and, therefore, supports the current versions of SageMaker Notebook Instances and SageMaker Studio notebooks.
+
+As of this release, the JupyterLab extension is *no longer compatible with JupyterLab 2.x*. If you're using JupyterLab 2.x, please use [release v0.21.0](#v0210-2022-10-04).
+
+Additional small features:
+
+* Add a real life cycle script for SageMaker Studio notebooks so you can install the plugin permanently in your domain.
+* Support for China regions (thanks to @yosefbs).
+* Update default container environment to Python 3.10.
+
+## v0.21.0 (2022-10-04)
+
+This release is just security patches in the dependencies.
+
 ## v0.20.0 (2021-12-09)
 
 This release provides support for JupyterLab 2.x.
@@ -76,7 +96,7 @@ Two small changes:
 
 * Run notebooks written in R or other languages. See the newly added [R example][example] for information.
 * When using the CLI or Library, you can supply extra arguments to the SageMaker Processing Job used to execute the notebook. For example to allow your notebook to run for up to a full day, invoke your notebook with `run-notebook run foo.ipynb --extra '{"StoppingCondition":{"MaxRuntimeInSeconds":86400}}'`. Using this mechanism, you can add extra inputs and outputs, connect to a VPC, add environment variables, expand disk space, add the run to a specific experiment, etc. See the [documentation for SageMaker Processing Jobs][processing-jobs] for more.
-  
+
 [example]: https://github.com/aws-samples/sagemaker-run-notebook/tree/master/examples/R
 [processing-jobs]: https://docs.aws.amazon.com/cli/latest/reference/sagemaker/create-processing-job.html
 

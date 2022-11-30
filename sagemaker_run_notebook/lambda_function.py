@@ -20,8 +20,8 @@ def execute_notebook(
 ):
     session = ensure_session()
     region = session.region_name
-    caller_id=session.client("sts").get_caller_identity()
-    partition = caller_id["Arn"].split(':')[1]
+    caller_id = session.client("sts").get_caller_identity()
+    partition = caller_id["Arn"].split(":")[1]
     account = caller_id["Account"]
     domain = domain_for_region(region)
     if not image:
@@ -151,6 +151,7 @@ def ensure_session(session=None):
         session = boto3.session.Session()
     return session
 
+
 def domain_for_region(region):
     """Get the DNS suffix for the given region.
     Args:
@@ -163,8 +164,8 @@ def domain_for_region(region):
     if region.startswith("us-isob-"):
         return "sc2s.sgov.gov"
     if region.startswith("cn-"):
-        return "amazonaws.com.cn"    
-    return  "amazonaws.com"
+        return "amazonaws.com.cn"
+    return "amazonaws.com"
 
 
 def lambda_handler(event, context):

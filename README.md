@@ -14,7 +14,7 @@ We provide a convenience library to configure your infrastructure, build executa
 
 1. You can perform operations from the shell using a command-line interface designed explicitly for running notebooks (_e.g._, `$ run-notebook run weather.ipynb -p place="Seattle, WA"`).
 2. You can perform operations from a Jupyter notebook or Python program using a special Python library (_e.g._, `run.invoke(notebook="weather.ipynb", parameters={"place": "Seattle, WA"})`)
-3. You can use the JupyterLab extension to run, schedule, and monitor notebooks interactively in any JupyterLab environment (inluding SageMaker Studio and SageMaker notebook instances)
+3. You can use the JupyterLab extension to run, schedule, and monitor notebooks interactively in any JupyterLab environment (including SageMaker Studio and SageMaker notebook instances)
 
 To install and configure these tools, see the [Quick Start](QuickStart.md).
 

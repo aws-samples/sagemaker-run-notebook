@@ -47,7 +47,8 @@ def abbreviate_image(image):
 
 
 abbrev_role_pat = re.compile(
-    r"arn:aws([^:]*):iam::(?P<account>\d+):role/(?P<name>[^/]+)")
+    r"arn:aws([^:]*):iam::(?P<account>\d+):role/(?P<name>[^/]+)"
+)
 
 
 def abbreviate_role(role):
@@ -127,15 +128,14 @@ def execute_notebook(
     elif "/" not in role:
         identity = session.client("sts").get_caller_identity()
         account = identity["Account"]
-        partition = identity["Arn"].split(':')[1]
+        partition = identity["Arn"].split(":")[1]
         role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if "/" not in image:
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
         domain = domain_for_region(region)
-        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
-            account, region, domain, image)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(account, region, domain, image)
 
     if notebook == None:
         notebook = input_path
@@ -145,8 +145,7 @@ def execute_notebook(
     timestamp = time.strftime("%Y-%m-%d-%H-%M-%S", time.gmtime())
 
     job_name = (
-        ("papermill-" + re.sub(r"[^-a-zA-Z0-9]",
-         "-", nb_name))[: 62 - len(timestamp)]
+        ("papermill-" + re.sub(r"[^-a-zA-Z0-9]", "-", nb_name))[: 62 - len(timestamp)]
         + "-"
         + timestamp
     )
@@ -636,7 +635,7 @@ def create_lambda(role=None, session=None):
     if "/" not in role:
         identity = session.client("sts").get_caller_identity()
         account = identity["Account"]
-        partition = identity["Arn"].split(':')[1]
+        partition = identity["Arn"].split(":")[1]
         role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     code_bytes = zip_bytes(code_file)
@@ -788,9 +787,8 @@ def invoke(
     if "/" not in image:
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
-        domain =  domain_for_region(region)
-        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
-            account, region, domain, image)
+        domain = domain_for_region(region)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(account, region, domain, image)
 
     if not role:
         try:
@@ -801,7 +799,7 @@ def invoke(
     if "/" not in role:
         identity = session.client("sts").get_caller_identity()
         account = identity["Account"]
-        partition = identity["Arn"].split(':')[1]
+        partition = identity["Arn"].split(":")[1]
         role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if input_path is None:
@@ -918,8 +916,7 @@ def schedule(
         account = session.client("sts").get_caller_identity()["Account"]
         region = session.region_name
         domain = domain_for_region(region)
-        image = "{}.dkr.ecr.{}.{}/{}:latest".format(
-            account, region, domain, image)
+        image = "{}.dkr.ecr.{}.{}/{}:latest".format(account, region, domain, image)
 
     if not role:
         try:
@@ -930,7 +927,7 @@ def schedule(
     if "/" not in role:
         identity = session.client("sts").get_caller_identity()
         account = identity["Account"]
-        partition = identity["Arn"].split(':')[1]
+        partition = identity["Arn"].split(":")[1]
         role = "arn:{}:iam::{}:role/{}".format(partition, account, role)
 
     if input_path is None:
@@ -963,7 +960,7 @@ def schedule(
     )
     identity = session.client("sts").get_caller_identity()
     account = identity["Account"]
-    partition = identity["Arn"].split(':')[1]
+    partition = identity["Arn"].split(":")[1]
     region = session.region_name
     target_arn = "arn:{}:lambda:{}:{}:function:{}".format(
         partition, region, account, lambda_function_name

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
@@ -11,7 +13,12 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-version_info = (0, 23, 0)
-flag = ""
+set -e
 
-__version__ = ".".join(map(str, version_info)) + flag
+version=0.23.0
+
+source activate studio
+
+pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v${version}/sagemaker_run_notebook-${version}.tar.gz
+
+restart-jupyter-server 

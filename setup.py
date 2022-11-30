@@ -26,7 +26,16 @@ version = get_version(str(Path(HERE) / name / "server_extension" / "_version.py"
 lab_path = Path(HERE) / "labextension"
 
 data_files_spec = [
-    ("share/jupyter/lab/extensions", str(lab_path / name / "labextension"), "*.tgz"),
+    (
+        "share/jupyter/labextensions/%s/static" % name,
+        str(lab_path / name / "labextension" / "static"),
+        "**",
+    ),
+    (
+        "share/jupyter/labextensions/%s" % name,
+        str(lab_path / name / "labextension"),
+        "package.json",
+    ),
     (
         "etc/jupyter/jupyter_notebook_config.d",
         "sagemaker_run_notebook/server_extension/jupyter-config/jupyter_notebook_config.d",
@@ -37,10 +46,7 @@ data_files_spec = [
 
 def runPackLabextension():
     if (lab_path / "package.json").is_file():
-        try:
-            run(["jlpm", "build:labextension"], cwd=str(lab_path))
-        except CalledProcessError:
-            pass
+        run(["jlpm", "build:labextension"], cwd=str(lab_path))
 
 
 pack_labext = command_for_func(runPackLabextension)
@@ -61,7 +67,7 @@ setuptools.setup(
     description="Schedule notebooks to run using SageMaker processing jobs",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/awslabs/sagemaker-run-notebook",
+    url="https://github.com/aws-samples/sagemaker-run-notebook",
     cmdclass=cmdclass,
     packages=["sagemaker_run_notebook", "sagemaker_run_notebook.server_extension"],
     license="Apache License 2.0",
@@ -87,7 +93,8 @@ setuptools.setup(
             "sphinx_rtd_theme",
             "autodocsumm",
             "sphinx-argparse",
-            "jupyterlab~=2.3",
+            "build",
+            "jupyterlab~=3.0",
         ]
     },
     entry_points={

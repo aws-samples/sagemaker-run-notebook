@@ -24,7 +24,7 @@ project = "sagemaker-run-notebook"
 author = "Amazon Web Services"
 
 # The full version, including alpha/beta/rc tags
-release = "v0.20.0"
+release = "v0.23.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,7 +48,7 @@ extensions = [
 source_suffix = ".rst"  # The suffix of source filenames.
 master_doc = "index"  # The master toctree document.
 
-copyright = u"%s, Amazon" % datetime.now().year
+copyright = "%s, Amazon" % datetime.now().year
 
 pygments_style = "default"
 

@@ -43,15 +43,21 @@ Contents:
 
 The files we reference here can be downloaded from the [latest GitHub release][release].
 
-> __Note:__ The JupyterLab extension in the current release works only with JupyterLab version 2.x. If you wish
-> to use the extension with JupyterLab version 1.x, use the latest [latest release compatible with JupyterLab 1.x][release-1.x].
-> JupyterLab 3 support will be released soon.
+__Note:__ The JupyterLab extension in the current release supports JupyterLab 3.x releases. If you're running 
+an older version of JupyterLab and want to use GUI interface, use one of the following older releases of the extension:
+
+| JupyterLab Version | Extension Release       |
+| ------------------ | ----------------------- |
+|       3.x          | [latest][release]       |
+|       2.x          | [v0.23.0][release-2.x]  |
+|       1.x          | [v0.19.0][release-1.x]  |
 
 If you want to schedule notebooks without using the library, there are resources included in the
 release to help you do that. See the [DIY instructions][DIY] on GitHub for details.
 
 [release]: https://github.com/aws-samples/sagemaker-run-notebook/releases/latest
 [release-1.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.19.0
+[release-2.x]: https://github.com/aws-samples/sagemaker-run-notebook/releases/tag/v0.23.0
 [DIY]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/DIY.md
 
 ## Setting up your environment
@@ -63,10 +69,12 @@ To follow this recipe, you'll need to have AWS credentials set up that give you 
 You can install the library directly from the GitHub release using pip:
 
 ```sh
-$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.20.0/sagemaker_run_notebook-0.20.0.tar.gz
+$ pip install https://github.com/aws-samples/sagemaker-run-notebook/releases/download/v0.23.0/sagemaker_run_notebook-0.23.0.tar.gz
 ```
 
-This installs the sagemaker-run-notebook library and CLI tool. It also installs the JupyterLab plug-in but does not activate it. See below in [Activating the JupyterLab Extension](#activating-the-jupyterlab-extension) for more information.
+This installs the sagemaker-run-notebook library, CLI tool and the JupyterLab 3.x plug-in. After installation, you will need to restart any currently running JupyterLab servers to activate the plug-in.
+
+To create a persistent installation (one that survives across restarts) in SageMaker notebook instances and SageMaker Studio notebooks, see below in [Activating the JupyterLab Extension](#activating-the-jupyterlab-extension).
 
 #### 2. Create roles, policies and the Lambda function
 
@@ -196,50 +204,21 @@ Once you have the infrastructure and containers set up, the best way to activate
 
 #### In a SageMaker Notebook instance
 
-1. On the AWS SageMaker console, go to Lifecycle Configuration. Create a new lifecycle configuration and add the `start.sh` script (available on [GitHub][start.sh]) to the start action. (The easiest way is just to copy and paste from GitHub to the AWS console.)
-2. Start or restart your notebook instance after setting the lifecycle configuration to point at your newly created lifecycle configuration.
+If you are using SageMaker Notebook Instances, the extension can be enabled automatically by adding a Lifecycle Configuration and restarting your Notebook Instance. This is an easy process that can be done once on the AWS console. See the [ReadMe file][instance-lifecycle] for the instructions.
 
-[start.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-config/start.sh
+[instance-lifecycle]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-config/notebook-instances/ReadMe.md
 
 #### In SageMaker Studio
 
-When you open SageMaker Studio, you can add the extension with the following steps:
+If you use SageMaker Studio notebooks, the extension can be enabled by adding a Lifecycle Configuration to your Studio Domain and restarting any Jupyter server apps. This is an easy process that can be done once on the AWS console. See the [README file][studio-lifecycle] for the instructions.
 
-1. Save the  `install-run-notebook.sh` script (available on [GitHub][install-run-notebook.sh]) to your home directory in Studio. The easiest way to do this is to open a text file and paste the contents in.
-2. Open a terminal tab (`File`->`New`->`Terminal`) and run the script as `bash install-run-notebook.sh`.
-3. When it's complete, refresh your Studio browser tab and you'll see the sidebar scheduler tab.
-
-If you restart your server app, just rerun steps 2 & 3 and you'll have the extension ready to go.
-
-[install-run-notebook.sh]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/studio/install-run-notebook.sh
+[studio-lifecycle]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-configuration/studio/README.md
 
 #### On a laptop or other system
 
-On your laptop, shutdown your Jupyter server process and run:
+Once you've installed the library with `pip install`, you'll need to restart your Jupyter server and refresh your web interface to pick up the extension in JupyterLab.
 
-```sh
-$ jupyter lab build
-```
-
-and then restart the server with:
-
-```sh
-$ jupyter lab
-```
-
-> __Note:__ This extension currently only supports JupyterLab 1.x and 2.x releases. If you see:
->
-> `WARNING | The extension "sagemaker_run_notebook" is outdated.`
->
-> when you do `jupyter lab build`, it indicates that you're running JupyterLab 3.x. You can switch to
-> the latest version of JupyterLab 2.x by running:
->
-> ```
-> $ pip uninstall jupyterlab
-> $ pip install 'jupyterlab<3'
-> ```
-> 
-> Support for a newer version of JupyterLab should be available soon.
+> __Note:__ This extension currently supports JupyterLab 3.x releases. For support for other JupyterLab versions, see the table at the top of the document.
 
 ## Using the JupyterLab extension
 
