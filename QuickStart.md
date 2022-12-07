@@ -206,7 +206,7 @@ Once you have the infrastructure and containers set up, the best way to activate
 
 If you are using SageMaker Notebook Instances, the extension can be enabled automatically by adding a Lifecycle Configuration and restarting your Notebook Instance. This is an easy process that can be done once on the AWS console. See the [ReadMe file][instance-lifecycle] for the instructions.
 
-[instance-lifecycle]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-config/notebook-instances/ReadMe.md
+[instance-lifecycle]: https://github.com/aws-samples/sagemaker-run-notebook/blob/master/scripts/lifecycle-configuration/notebook-instances/ReadMe.md
 
 #### In SageMaker Studio
 
