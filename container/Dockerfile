@@ -6,6 +6,8 @@ ENV PYTHONUNBUFFERED TRUE
 
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install papermill jupyter nteract-scrapbook boto3 requests==2.20.1 && pip install -r /tmp/requirements.txt
+RUN apt-get -y update
+RUN apt-get -y install git
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PATH="/opt/program:${PATH}"
