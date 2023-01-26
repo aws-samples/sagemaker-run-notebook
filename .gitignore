@@ -15,3 +15,4 @@ MANIFEST
 manual_dist/**
 sagemaker_run_notebook/cloudformation.yml
 docs/build/**
+.DS_Store

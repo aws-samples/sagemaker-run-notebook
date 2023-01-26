@@ -122,7 +122,7 @@ class BaseHandler(APIHandler):
         try:
             data = json.loads(self.request.body.decode("utf-8"))
 
-            if not self.required_params(data, ["image", "input_path", "notebook"]):
+            if not self.required_params(data, required):
                 return None
             else:
                 return data

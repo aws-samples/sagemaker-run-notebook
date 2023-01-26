@@ -50,8 +50,14 @@ region=$(aws configure get region)
 region=${region:-us-west-2}
 echo "Region ${region}"
 
+if [[ $region == cn-* ]]
+then
+    amazon_extension="amazonaws.com.cn"
+else
+    amazon_extension="amazonaws.com"
+fi
 
-fullname="${account}.dkr.ecr.${region}.amazonaws.com/${image}:latest"
+fullname="${account}.dkr.ecr.${region}.${amazon_extension}/${image}:latest"
 
 # If the repository doesn't exist in ECR, create it.
 
@@ -73,7 +79,7 @@ then
   # Get the login command from ECR and execute it directly
   $(aws ecr get-login --region ${region} --no-include-email)
 else
-  aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account}.dkr.ecr.${region}.amazonaws.com
+  aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${account}.dkr.ecr.${region}.${amazon_extension}
 fi
 
 # Build the docker image locally with the image name and then push it to ECR
