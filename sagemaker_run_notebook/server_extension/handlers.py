@@ -296,6 +296,22 @@ class RuleHandler(BaseHandler):
         except botocore.exceptions.BotoCoreError as e:
             self.botocore_error_response(e)
 
+    def patch(self, rule_name):
+        """Enable or disable a rule"""
+        try:
+            data = self.load_params(["action"])
+            if data is None:
+                return
+
+            if data['action'] == 'enable':
+                run.enable_schedule(rule_name=rule_name)
+            elif data['action'] == 'disable':
+                run.disable_schedule(rule_name=rule_name)
+        except botocore.exceptions.ClientError as e:
+            self.client_error_response(e)
+        except botocore.exceptions.BotoCoreError as e:
+            self.botocore_error_response(e)
+
 
 class InvokeHandler(BaseHandler):
     def post(self):
