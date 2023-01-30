@@ -122,7 +122,7 @@ class BaseHandler(APIHandler):
         try:
             data = json.loads(self.request.body.decode("utf-8"))
 
-            if not self.required_params(data, ["image", "input_path", "notebook"]):
+            if not self.required_params(data, required):
                 return None
             else:
                 return data
@@ -291,6 +291,22 @@ class RuleHandler(BaseHandler):
         try:
             run.unschedule(rule_name=rule_name)
             self.finish()
+        except botocore.exceptions.ClientError as e:
+            self.client_error_response(e)
+        except botocore.exceptions.BotoCoreError as e:
+            self.botocore_error_response(e)
+
+    def patch(self, rule_name):
+        """Enable or disable a rule"""
+        try:
+            data = self.load_params(["action"])
+            if data is None:
+                return
+
+            if data['action'] == 'enable':
+                run.enable_schedule(rule_name=rule_name)
+            elif data['action'] == 'disable':
+                run.disable_schedule(rule_name=rule_name)
         except botocore.exceptions.ClientError as e:
             self.client_error_response(e)
         except botocore.exceptions.BotoCoreError as e:

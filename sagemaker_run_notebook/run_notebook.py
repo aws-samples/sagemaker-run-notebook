@@ -982,7 +982,7 @@ def unschedule(rule_name, session=None):
     prefixed_rule_name = RULE_PREFIX + rule_name
 
     session = ensure_session(session)
-    events = boto3.client("events")
+    events = session.client("events")
     lambda_ = session.client("lambda")
 
     try:
@@ -999,6 +999,32 @@ def unschedule(rule_name, session=None):
     events.remove_targets(Rule=prefixed_rule_name, Ids=["Default"])
 
     events.delete_rule(Name=prefixed_rule_name)
+
+def enable_schedule(rule_name, session=None):
+    """Enable an existing notebook schedule rule.
+
+    Args:
+        rule_name (str): The name of the rule for CloudWatch Events (required).
+        session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
+    """
+    prefixed_rule_name = RULE_PREFIX + rule_name
+
+    session = ensure_session(session)
+    events = session.client("events")
+    events.enable_rule(Name=prefixed_rule_name)
+
+def disable_schedule(rule_name, session=None):
+    """Disable an existing notebook schedule rule.
+
+    Args:
+        rule_name (str): The name of the rule for CloudWatch Events (required).
+        session (boto3.Session): The boto3 session to use. Will create a default session if not supplied (default: None).
+    """
+    prefixed_rule_name = RULE_PREFIX + rule_name
+
+    session = ensure_session(session)
+    events = session.client("events")
+    events.disable_rule(Name=prefixed_rule_name)
 
 
 def describe_schedules(n=0, rule_prefix=None, session=None):

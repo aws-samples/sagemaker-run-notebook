@@ -60,7 +60,10 @@ export class RulesList extends React.Component<RuleListProps, RuleListState> {
       rule.image,
       rule.instance,
       rule.role,
-      rule.state,
+      // rule.state,
+      <a key="state" onClick={this.toggleState(rule.name, rule.state)} className={tableLinkClass}>
+        {rule.state}
+      </a>,
       <a key={rule.name} onClick={this.deleteRule(rule.name)} className={tableLinkClass}>
         Delete
       </a>,
@@ -94,6 +97,40 @@ export class RulesList extends React.Component<RuleListProps, RuleListState> {
       content = <div className={tableEmptyClass}>Loading rules...</div>;
     }
     return <SimpleTablePage title="Schedule and Event Rules">{content}</SimpleTablePage>;
+  }
+
+  private toggleState(rule: string, state: string) {
+    return async (): Promise<boolean> => {
+      console.log(`toggle rule ${rule} state from ${state}`);
+      if (!['DISABLED', 'ENABLED'].includes(state)) {
+        console.log(`unknown state: ${state}`);
+        return;
+      }
+      const settings = ServerConnection.makeSettings();
+      const response = await ServerConnection.makeRequest(
+        URLExt.join(settings.baseUrl, 'sagemaker-scheduler', 'schedule', rule),
+        { method: 'PATCH', body: JSON.stringify({ action: state === 'DISABLED' ? 'enable' : 'disable' }) },
+        settings,
+      );
+
+      if (!response.ok) {
+        const error = (await response.json()) as ErrorResponse;
+        let errorMessage: string;
+        if (error.error) {
+          errorMessage = error.error.message;
+        } else {
+          errorMessage = JSON.stringify(error);
+        }
+        showDialog({
+          title: 'Error toggling schedule state',
+          body: <p>{errorMessage}</p>,
+          buttons: [Dialog.okButton({ label: 'Close' })],
+        });
+        return;
+      }
+      this.props.model.refresh();
+      return true;
+    };
   }
 
   private deleteRule(rule: string) {

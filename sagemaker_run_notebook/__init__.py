@@ -35,6 +35,8 @@ from sagemaker_run_notebook.run_notebook import (
     create_lambda_role,
     schedule,
     unschedule,
+    enable_schedule,
+    disable_schedule,
     describe_schedule,
     describe_schedules,
     list_schedules,
