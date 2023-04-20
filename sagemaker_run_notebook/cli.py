@@ -489,7 +489,7 @@ def cli_argparser():
         help="Use CodeBuild to build a Docker image for notebook execution",
     )
     container_parser.add_argument(
-        "repository",
+        "--repository",
         help="The ECR repository for the image (default: notebook-runner)",
         nargs="?",
         default="notebook-runner",
