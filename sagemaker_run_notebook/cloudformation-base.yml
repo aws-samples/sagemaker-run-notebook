@@ -113,7 +113,7 @@ Resources:
               - events:PutRule
               - events:ListTargetsByRule
               - events:DisableRule
-            Resource: 'arn:aws:events:*:*:rule/RunNotebook*'
+            Resource: {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "events:*:*:rule/RunNotebook*'"]] }
           - Sid: runnotebooklambda
             Effect: Allow
             Action:
@@ -121,16 +121,16 @@ Resources:
               - lambda:InvokeFunction
               - lambda:InvokeAsync
               - lambda:RemovePermission
-            Resource: 'arn:aws:lambda:*:*:function:RunNotebook'
+            Resource: {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "lambda:*:*:function:RunNotebook'"]] }
           - Sid: s3xfer
             Effect: Allow
             Action:
               - s3:GetObject
               - s3:PutObject
             Resource: 
-              - 'arn:aws:s3:::*SageMaker*'
-              - 'arn:aws:s3:::*Sagemaker*'
-              - 'arn:aws:s3:::*sagemaker*'
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*SageMaker*'"]] }
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*Sagemaker*'"]] }
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*sagemaker*'"]] }
           - Sid: s3create
             Effect: Allow
             Action:
@@ -178,9 +178,9 @@ Resources:
               - s3:ListBucket
               - s3:PutObject
             Resource: 
-              - 'arn:aws:s3:::*SageMaker*'
-              - 'arn:aws:s3:::*Sagemaker*'
-              - 'arn:aws:s3:::*sagemaker*'
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*SageMaker*'"]] }
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*Sagemaker*'"]] }
+              - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*sagemaker*'"]] }
           - Sid: vpcattach
             Effect: Allow
             Action:
@@ -236,9 +236,9 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource: 
-                  - 'arn:aws:s3:::*SageMaker*'
-                  - 'arn:aws:s3:::*Sagemaker*'
-                  - 'arn:aws:s3:::*sagemaker*'
+                  - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*SageMaker*'"]] }
+                  - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*Sagemaker*'"]] }
+                  - {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "s3:::*sagemaker*'"]] }
   LambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -269,7 +269,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: RunNotebook
       Principal: events.amazonaws.com
-      SourceArn: {"Fn::Join": [":", ["arn:aws:events", {"Ref": "AWS::Region"}, {"Ref": "AWS::AccountId"}, "rule/RunNotebook-*"]]}
+      SourceArn: {"Fn::Join": [":", ["arn", {"Ref": "AWS::Partition"}, "events", {"Ref": "AWS::Region"}, {"Ref": "AWS::AccountId"}, "rule/RunNotebook-*"]]}
   InvokeNotebookLambda:
     Type: AWS::Lambda::Function
     Properties:
